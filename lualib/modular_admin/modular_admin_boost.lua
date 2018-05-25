@@ -269,7 +269,7 @@ Event.register(defines.events.on_player_joined_game, function(event)
 	end
 end)
 
-Event.register(-1, function(event)
+Event.register(Event.core_events.init, function(event)
 	if(global.modular_admin_boost.enabled) then
 		modular_admin_add_submodule("modular_admin_boost")
 	else
