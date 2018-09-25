@@ -7,15 +7,15 @@ global.modular_tag_patreon.patreons = {
 		{name = "I_IBlackI_I", tag = "Lua Hero", color = {r=1.0,g=1.0,b=1.0}, chat_color = nil},
 		{name = "psihius", tag = "SysAdmin", color = nil, chat_color = nil},
 		{name = "Hornwitser", tag = "MoneyBags", color = nil, chat_color = nil},
-		{name = "jordank321", tag = "Im not sure LMAO", color = nil, chat_color = nil},
+		{name = "jordank321", tag = "I'm not sure LMAO", color = nil, chat_color = nil},
 		{name = "viceroypenguin", tag = "MoneyBags", color = nil, chat_color = nil},
 		{name = "sikian", tag = "Sikjizz!", color = nil, chat_color = nil},
 		{name = "Lyfe", tag = "Is Alive", color = { r = 0.559, g = 0.761, b = 0.157}, chat_color = { r = 0.708, g = 0.996, b = 0.134}},
 		{name = "sniperczar", tag = "Behemoth Bait", color = nil, chat_color = nil},
 		{name = "i-l-i", tag = "Space Dolphin", color = nil, chat_color = nil},
 		{name = "Uriopass", tag = "Ratio Maniac", color = nil, chat_color = nil},
-		{name = "audigex", tag = "Spaghetti Monster", ccolor = nil, chat_color = nil},
-		{name = "Sergeant_Steve", tag = "Biter Killer", color = nil, chat_color = nil},
+		{name = "audigex", tag = "Spaghetti Monster", color = nil, chat_color = nil},
+		{name = "Sergeant_Steve", tag = "Biter Killer", color = { r = 0.0, g = 0.0, b = 1.0}, chat_color = { r = 0.35, g = 0.4, b = 1.0}},
 		{name = "Zr4g0n", tag = "Totally not a dragon!", color = { r = 0.227, g = 0.263, b = 0.639}, chat_color = { r = 0.455, g = 0.506, b = 0.871}},
 		{name = "LordKiwi", tag = nil, color = nil, chat_color = nil},
 		{name = "stik", tag = nil, color = nil, chat_color = nil},
@@ -28,7 +28,8 @@ global.modular_tag_patreon.patreons = {
 		{name = "exi2163", tag = "Solution Engineer", color = nil, chat_color = nil},
 		{name = "Kodikuu", tag = "Tinkerer", color = { r = 0.404, g = 0.227, b = 0.718}, chat_color = nil},
 		{name = "Twinsen", tag = "Factorio Developer", color = nil, chat_color = nil},
-		{name = "SpennyDurp", tag = "I WILL Break It", color = nil, chat_color = nil}
+		{name = "SpennyDurp", tag = "I WILL Break It", color = nil, chat_color = nil},
+		{name = "Alkumist", tag = "Snoot booper :3", color = { r = 1.0, g = 1.0, b = 0.0}, chat_color = nil}
 }
 
 function modular_tag_patreon_on_gui_click(event)
@@ -115,7 +116,7 @@ function modular_tag_patreon_joined(event)
 			else 
 				player.print("o.O It seems you don't have a unique color.. Please contact the admins to get one.")
 			end
-			if(patreon.color ~= nil) then
+			if(patreon.chat_color ~= nil) then
 				player.chat_color = patreon.chat_color
 				player.print("Unique chat-color applied automagically!")
 			end
