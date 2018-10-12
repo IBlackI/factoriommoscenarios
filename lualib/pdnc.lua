@@ -19,9 +19,11 @@ global.pdnc_doomsday_start = -30.75 -- in ingame days. Negative numbers disables
 global.pdnc_pollution_multiplier = 5000
 global.pdnc_debug = false
 global.pdnc_max_brightness_disable = false
+global.pdnc_enable_rocket_darkness = true
 global.pdnc_rockets_launched = 0
 global.pdnc_rockets_launched_step_size = 0.025
 global.pdnc_rockets_launched_smooth = 0
+
 
 
 function pdnc_setup()
@@ -34,6 +36,7 @@ function pdnc_on_load()
 	if(global.pdnc_doomsday_start < 0.0) then
 		pdnc_max_brightness = 0.5 -- if not doomsday, eternal night
 	end
+	game.print("Programmable Day-Night Cycle loaded!") 
 end
 
 function pdnc_core()
@@ -41,7 +44,7 @@ function pdnc_core()
 	local s = global.pdnc_surface
 	global.current_time = game.tick / game.surfaces[s].ticks_per_day
 	global.pdnc_last_point = global.pdnc_current_point
-	global.pdnc_current_point = {x = global.current_time, y = pdnc_program()}
+	global.pdnc_current_point = {x = global.current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
     local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
 	local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
 	
@@ -55,14 +58,14 @@ function pdnc_core()
 		game.surfaces[s].morning = bot_point - global.current_time
 		game.surfaces[s].dawn = top_point - global.current_time
 	elseif(top_point == bot_point) then
-		game.print("PDNC: Top and bot point equal")
+		pdnc_debug_message("PDNC: Top and bot point equal")
 		-- no cleanup here
 		-- if the points are equal, use last value until not equal
 		-- this should never be reached unless the pdnc_program() is broken.
 	else
-		game.print("Top and bot not different nor equal. probably a NaN error")
-		game.print("bot_point: " .. bot_point)
-		game.print("top_point: " .. top_point)
+		pdnc_debug_message("Top and bot not different nor equal. probably a NaN error")
+		pdnc_debug_message("bot_point: " .. bot_point)
+		pdnc_debug_message("top_point: " .. top_point)
 		-- this should never be reached.
 	end
 end
@@ -134,18 +137,17 @@ function pdnc_normalize(n)
 	return (n + 1)/2
 end
 
-function pdnc_scaler(r)
-	if(r < 0.0) then
-		r = 0.0
-	end
-	if (r > 1.0) then
-		r = 1.0
-	end
-	if(global.pdnc_max_brightness_disable) then
-		return r * 0.85
-	else
-		global.pdnc_max_brightness = 1 -  pdnc_rocket_launch_darkness()
-		return r * (0.85 * global.pdnc_max_brightness)
+function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
+	if(pdnc_check_valid(r, "pdnc_scaler"))then
+		if(global.pdnc_max_brightness_disable) then
+			return r * 0.85
+		end
+		
+		if(pdnc_enable_rocket_darkness) then
+			return r * (0.85 * global.pdnc_max_brightness * 1 -  pdnc_rocket_launch_darkness())
+		end
+		
+		return r * (0.85 * global.pdnc_max_brightness)	
 	end
 end
 
@@ -169,20 +171,10 @@ function pdnc_intersection_bot (s2, e2)
 end
 
 function pdnc_set_max_brightness(n)
-	if(n == nil) then
-		game.print("Tried to set max brightness to nil! Using 1.0 instead.")
-		n = 1.0
+	if(pdnc_check_valid(n, "pdnc_set_max_brightness")) then
+		global.pdnc_max_brightness = n
+		pdnc_debug_message("global.pdnc_max_brightness set to " .. global.pdnc_max_brightness)
 	end
-	if(n < 0) then
-		game.print("tried to set max brightness to " .. n .. " needs to be between 0.0 and 1.0")
-		n = 0
-	end
-	if(n > 1) then
-		game.print("tried to set max brightness to " .. n .. " needs to be between 0.0 and 1.0")
-		n = 1
-	end
-	global.pdnc_max_brightness = n
-		game.print("global.pdnc_max_brightness set to " .. global.pdnc_max_brightness)
 end
 
 function pdnc_min_to_ticks(m)
@@ -219,6 +211,25 @@ function pdnc_rocket_launch_darkness()
 	return (1 - (50/(global.pdnc_rockets_launched_smooth+50)))
 end
 
+function pdnc_check_valid(n, s)
+	if (n == nil) then
+		pdnc_debug_message(.. s .. " set to nil! Set to 1.0 instead")
+		return false
+	else if (n < 0)
+		pdnc_debug_message(.. s .. " cannot be " .. n .. " limited to 0.0 instead")
+		return false
+	else if (n > 1)
+		pdnc_debug_message(.. s .. " cannot be " .. n .. " limited to 1.0 instead")
+		return false
+	else return true
+end
+	
+function pdnc_debug_message(s)
+	if(global.pdnc_debug) then
+		game.print(s)
+	end
+end	
+	
 script.on_nth_tick(global.pdnc_stepsize, pdnc_core)
 script.on_init(pdnc_setup)
 script.on_load(pdnc_on_load)
