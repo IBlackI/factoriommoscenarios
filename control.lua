@@ -15,6 +15,8 @@ require "lualib/modular_admin/modular_admin" --New admin tools
 require "lualib/modular_information/modular_information" --New player information system
 require "lualib/antigrief" --untested
 require "equipment"
+require "permissions"
+require "trusted"
 
 require "lualib/pdnc" --Zr's fancy day-night cycle stuff
 -- require "wg_jungle" --Jungle World Generator, generates a world full of trees!
