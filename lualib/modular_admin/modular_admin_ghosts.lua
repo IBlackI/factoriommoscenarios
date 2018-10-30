@@ -15,7 +15,8 @@
 --
 
 global.modular_admin_ghosts = global.modular_admin_ghosts or {}
-global.modular_admin_ghosts.enabled = true
+global.modular_admin_ghosts.enabled = false
+global.modular_admin_ghosts.force_charting_enabled = true
 
 --
 --	FUNCTIONS
@@ -45,15 +46,17 @@ function modular_admin_ghosts_entity_mined(event)
 	or entity.name == "tile-ghost"
     or entity.name == 'item-request-proxy'
 	then return end
-	local ghost = "a"
-	if (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole')) or entity.type == "pipe-to-ground" then
+	local ghost = nil
+	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
 		{name="entity-ghost",	force=game.forces.Admins, inner_name="programmable-speaker", position=entity.position, direction = entity.direction}
 	else
 		ghost = entity.surface.create_entity
 		{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	end
-	ghost.last_user = game.players[event.player_index]
+	if ghost ~= nil then
+		ghost.last_user = game.players[event.player_index]
+	end
 end
 
 function modular_admin_ghosts_entity_deconstructed(event)
@@ -69,15 +72,17 @@ function modular_admin_ghosts_entity_deconstructed(event)
 	or entity.name == "tile-ghost"
     or entity.name == 'item-request-proxy'
 	then return end
-	local ghost = "a"
-	if (game and game.active_mods.base:sub(1,4) == '0.14' and (entity.type == 'underground-belt' or entity.type == 'electric-pole')) or entity.type == "pipe-to-ground" then
+	local ghost = nil
+	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
 		{name="entity-ghost",	force=game.forces.Admins, inner_name="programmable-speaker", position=entity.position, direction = entity.direction}
 	else
 		ghost = entity.surface.create_entity
 		{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	end
-	ghost.last_user = entity.last_user
+	if ghost ~= nil then
+		ghost.last_user = entity.last_user
+	end
 end
 
 function modular_admin_ghosts_enable()
@@ -91,10 +96,17 @@ function modular_admin_ghosts_disable()
 	modular_admin_remove_submodule("modular_admin_ghosts")
 end
 
+function modular_admin_ghosts_chart(event)
+	if ((global.modular_admin_ghosts.force_charting_enabled == true)and (game.tick % 1800 == 0)) then
+		game.forces.Admins.chart_all()
+	end
+end
+
 --
 --	EVENTS
 --
 
+Event.register(defines.events.on_tick, modular_admin_ghosts_chart)
 Event.register(defines.events.on_pre_player_mined_item, modular_admin_ghosts_entity_mined)
 Event.register(defines.events.on_robot_pre_mined, modular_admin_ghosts_entity_deconstructed)
 
