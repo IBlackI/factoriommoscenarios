@@ -14,11 +14,11 @@ global.pdnc_surface = 1
 global.pdnc_current_time = 0
 global.pdnc_current_point = {x = 0, y = 1.0}
 global.pdnc_last_point = {x = -1, y = 0.0}
-global.pdnc_max_brightness = 1.0 -- for clusterio
-global.pdnc_doomsday_start = -30.75 -- in ingame days. Negative numbers disables
+global.pdnc_max_brightness = 0.5 -- for clusterio
+global.pdnc_doomsday_start = -30.75 -- in ingame days. Negative numbers disables doomsday and enables eternal night
 global.pdnc_pollution_multiplier = 5000
 global.pdnc_debug = false
-global.pdnc_max_brightness_disable = false
+global.pdnc_enable_brightness_limit = false
 global.pdnc_enable_rocket_darkness = true
 global.pdnc_rockets_launched = 0
 global.pdnc_rockets_launched_step_size = 0.025
@@ -32,11 +32,14 @@ function pdnc_setup()
 end
 
 function pdnc_on_load()
-	commands.add_command("timeleft", "Gives you the time till doomsday!", pdnc_doomsday_time_left)
 	if(global.pdnc_doomsday_start < 0.0) then
 		pdnc_max_brightness = 0.5 -- if not doomsday, eternal night
+		pdnc_enable_brightness_limit = true
+	else
+		commands.add_command("timeleft", "Gives you the time till doomsday!", pdnc_doomsday_time_left)
 	end
-	game.print("Programmable Day-Night Cycle loaded!") 
+	
+	--game.print("Programmable Day-Night Cycle loaded!") 
 end
 
 function pdnc_core()
@@ -44,7 +47,8 @@ function pdnc_core()
 	local s = global.pdnc_surface
 	global.current_time = game.tick / game.surfaces[s].ticks_per_day
 	global.pdnc_last_point = global.pdnc_current_point
-	global.pdnc_current_point = {x = global.current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
+	global.pdnc_current_point = {x = global.current_time, y = pdnc_scaler(pdnc_c_boxy(global.current_time * math.pi * 2))}
+	-- global.pdnc_current_point = {x = global.current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
     local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
 	local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
 	
@@ -100,11 +104,11 @@ function pdnc_program()
 		returnvalue = math.pow(pdnc_c_boxy(x), (1 + global.current_time / 4))
 		-- days become shorter over time towards n^6.125
 	elseif (global.current_time < global.pdnc_doomsday_start + 1) then
-		global.pdnc_max_brightness_disable = true
+		global.pdnc_enable_brightness_limit = false
 		returnvalue = math.pow(((global.pdnc_doomsday_start + 1) - global.current_time), 7)
 		pdnc_pollute(radius,returnvalue,16)
 	else
-		global.pdnc_max_brightness_disable = false
+		global.pdnc_enable_brightness_limit = true
 		returnvalue = math.pow(pdnc_c_boxy(x), 6.125)--*0.5
 	end
 	return pdnc_scaler(returnvalue)
@@ -139,15 +143,19 @@ end
 
 function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
 	if(pdnc_check_valid(r, "pdnc_scaler"))then
-		if(global.pdnc_max_brightness_disable) then
-			return r * 0.85
+	
+		local a = 1
+		local b = 1
+		
+		if(global.pdnc_enable_brightness_limit) then
+			a = global.pdnc_max_brightness
 		end
 		
 		if(pdnc_enable_rocket_darkness) then
-			return r * (0.85 * global.pdnc_max_brightness * 1 -  pdnc_rocket_launch_darkness())
+			b = 1 -  pdnc_rocket_launch_darkness()
 		end
 		
-		return r * (0.85 * global.pdnc_max_brightness)	
+		return r * 0.85 * a * b	
 	end
 end
 
@@ -213,23 +221,24 @@ end
 
 function pdnc_check_valid(n, s)
 	if (n == nil) then
-		pdnc_debug_message(.. s .. " set to nil! Set to 1.0 instead")
+		pdnc_debug_message(s .. " set to nil! Set to 1.0 instead")
 		return false
-	else if (n < 0)
-		pdnc_debug_message(.. s .. " cannot be " .. n .. " limited to 0.0 instead")
+	elseif (n < 0) then
+		pdnc_debug_message(s .. " cannot be " .. n .. " limited to 0.0 instead")
 		return false
-	else if (n > 1)
-		pdnc_debug_message(.. s .. " cannot be " .. n .. " limited to 1.0 instead")
+	elseif (n > 1) then
+		pdnc_debug_message(s .. " cannot be " .. n .. " limited to 1.0 instead")
 		return false
 	else return true
+	end
 end
-	
+
 function pdnc_debug_message(s)
 	if(global.pdnc_debug) then
 		game.print(s)
 	end
 end	
-	
+
 script.on_nth_tick(global.pdnc_stepsize, pdnc_core)
 script.on_init(pdnc_setup)
 script.on_load(pdnc_on_load)
