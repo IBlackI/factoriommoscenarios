@@ -104,7 +104,7 @@ end
 --
 --	EVENTS
 --
-Event.register(-1, function(event)
+Event.register(Event.core_events.init, function(event)
 		modular_admin_add_submodule("modular_admin_compensate")
 	end)
 	
