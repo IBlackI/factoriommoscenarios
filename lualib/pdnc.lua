@@ -33,8 +33,8 @@ end
 
 function pdnc_on_load()
 	if(global.pdnc_doomsday_start < 0.0) then
-		pdnc_max_brightness = 0.5 -- if not doomsday, eternal night
-		pdnc_enable_brightness_limit = true
+		global.pdnc_max_brightness = 0.5 -- if not doomsday, eternal night
+		global.pdnc_enable_brightness_limit = true
 	else
 		commands.add_command("timeleft", "Gives you the time till doomsday!", pdnc_doomsday_time_left)
 	end
@@ -237,12 +237,11 @@ function pdnc_debug_message(s)
 	if(global.pdnc_debug) then
 		game.print(s)
 	end
-end	
+end
 
-script.on_nth_tick(global.pdnc_stepsize, pdnc_core)
-script.on_init(pdnc_setup)
-script.on_load(pdnc_on_load)
---script.on_rocket_launched(pdnc_rocket_launch_counter)
-script.on_event(defines.events.on_rocket_launched, function(event)
+Event.register(-global.pdnc_stepsize, pdnc_core)
+Event.register(Event.core_events.init, pdnc_setup)
+Event.register(Event.core_events.load,pdnc_on_load)
+Event.register(defines.events.on_rocket_launched, function(event)
   pdnc_rocket_launch_counter()
 end)

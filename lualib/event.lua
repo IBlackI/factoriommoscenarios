@@ -81,7 +81,7 @@ local bootstrap_register = {
 }
 
 local function valid_event_id(id)
-    return (tonumber(id) and id >= 0) or ((type(id) == 'string') and not bootstrap_register[id])
+    return tonumber(id) or ((type(id) == 'string') and not bootstrap_register[id])
 end
 
 local function get_event_name(name)
