@@ -33,7 +33,10 @@ function modular_admin_ghosts_create_force()
 end
 
 function modular_admin_ghosts_entity_mined(event)
-	if global.modular_admin_ghosts.enabled == false then return end
+	if global.modular_admin_ghosts.enabled == false then 
+		return 
+	end
+	
 	local entity = event.entity
 	if entity.force.name == "neutral" 
 	or entity.name == "entity-ghost" 
@@ -44,8 +47,12 @@ function modular_admin_ghosts_entity_mined(event)
 	or entity.type:find("robot") 
 	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-    or entity.name == 'item-request-proxy'
-	then return end
+        or entity.name == "item-request-proxy"
+	or entity.name == "deconstructible-tile-proxy"
+	then 
+		return 
+	end
+	
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
@@ -60,7 +67,10 @@ function modular_admin_ghosts_entity_mined(event)
 end
 
 function modular_admin_ghosts_entity_deconstructed(event)
-	if global.modular_admin_ghosts.enabled == false then return end
+	if global.modular_admin_ghosts.enabled == false then 
+		return 
+	end
+	
 	local entity = event.entity
 	if entity.force.name == "neutral" 
 	or entity.name == "entity-ghost" 
@@ -70,8 +80,12 @@ function modular_admin_ghosts_entity_deconstructed(event)
 	or entity.type == "car" 
 	or entity.type:find("robot") 
 	or entity.name == "tile-ghost"
-    or entity.name == 'item-request-proxy'
-	then return end
+        or entity.name == "item-request-proxy"
+	or entity.name == "deconstructible-tile-proxy"
+	then 
+		return 
+	end
+	
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
