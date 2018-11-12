@@ -15,8 +15,8 @@ global.pdnc_current_time = 0
 global.pdnc_current_point = {x = 0, y = 1.0}
 global.pdnc_last_point = {x = -1, y = 0.0}
 global.pdnc_max_brightness = 0.5 -- for clusterio
-global.pdnc_doomsday_start = -30.75 -- in ingame days. Negative numbers disables doomsday and enables eternal night
-global.pdnc_pollution_multiplier = 5000
+--global.pdnc_doomsday_start = -30.75 -- in ingame days. Negative numbers disables doomsday and enables eternal night
+--global.pdnc_pollution_multiplier = 5000
 global.pdnc_debug = false
 global.pdnc_enable_brightness_limit = false
 global.pdnc_enable_rocket_darkness = true
@@ -28,9 +28,9 @@ global.pdnc_rockets_launched_smooth = 0
 
 function pdnc_setup()
 	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
-	pdnc_on_load()
+	--pdnc_on_load()
 end
-
+--[[
 function pdnc_on_load()
 	if(global.pdnc_doomsday_start < 0.0) then
 		global.pdnc_max_brightness = 0.5 -- if not doomsday, eternal night
@@ -41,14 +41,14 @@ function pdnc_on_load()
 	
 	--game.print("Programmable Day-Night Cycle loaded!") 
 end
+]]
 
 function pdnc_core()
 	pdnc_freeze_check()
 	local s = global.pdnc_surface
 	global.current_time = game.tick / game.surfaces[s].ticks_per_day
 	global.pdnc_last_point = global.pdnc_current_point
-	global.pdnc_current_point = {x = global.current_time, y = pdnc_scaler(pdnc_c_boxy(global.current_time * math.pi * 2))}
-	-- global.pdnc_current_point = {x = global.current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
+	global.pdnc_current_point = {x = global.current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
     local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
 	local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
 	
@@ -63,7 +63,7 @@ function pdnc_core()
 		game.surfaces[s].dawn = top_point - global.current_time
 	elseif(top_point == bot_point) then
 		pdnc_debug_message("PDNC: Top and bot point equal")
-		-- no cleanup here
+		-- no cleanup is done here
 		-- if the points are equal, use last value until not equal
 		-- this should never be reached unless the pdnc_program() is broken.
 	else
@@ -96,6 +96,7 @@ end
 function pdnc_program()
 	--reduce_brightness(0.5)
 	local x = global.current_time * math.pi * 2
+	--[[
 	local returnvalue = 0
 	local radius = 512 --make global
 	if (global.pdnc_doomsday_start < 0.0) then
@@ -112,6 +113,8 @@ function pdnc_program()
 		returnvalue = math.pow(pdnc_c_boxy(x), 6.125)--*0.5
 	end
 	return pdnc_scaler(returnvalue)
+	]]
+	return pdnc_scaler(pdnc_c_boxy(x))
 end
 
 function reduce_brightness(n)
@@ -127,6 +130,7 @@ function pdnc_c_boxy(x)
 	-- magic numbers to make it scale to (-1, 1)
 end
 
+--[[
 function pdnc_pollute(r,p,n)
 	local pollution = global.pdnc_stepsize * p * global.pdnc_pollution_multiplier
 	local position = {x = 0.0, y = 0.0}
@@ -136,6 +140,7 @@ function pdnc_pollute(r,p,n)
 		game.surfaces[global.pdnc_surface].pollute(position, pollution)
 	end
 end
+]]
 
 function pdnc_normalize(n)
 	return (n + 1)/2
@@ -155,7 +160,7 @@ function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
 			b = 1 -  pdnc_rocket_launch_darkness()
 		end
 		
-		return r * 0.85 * a * b	
+		return r * 0.85 * a * b	-- 0.85 is the 'brightness range' of factorio
 	end
 end
 
@@ -189,6 +194,7 @@ function pdnc_min_to_ticks(m)
 	return 60*60*m
 end
 
+--[[
 function pdnc_doomsday_time_left()
 	local ticks_until_doomsday = game.surfaces[global.pdnc_surface].ticks_per_day * global.pdnc_doomsday_start
 	local ticks = ticks_until_doomsday - game.tick
@@ -207,6 +213,7 @@ function pdnc_doomsday_time_left()
 		game.print("Doomsday was: " .. string.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60) .. " ago...")
 	end
 end
+]]
 
 function pdnc_rocket_launch_counter()
 	global.pdnc_rockets_launched = 1 + global.pdnc_rockets_launched
@@ -241,7 +248,7 @@ end
 
 Event.register(-global.pdnc_stepsize, pdnc_core)
 Event.register(Event.core_events.init, pdnc_setup)
-Event.register(Event.core_events.load,pdnc_on_load)
+--Event.register(Event.core_events.load,pdnc_on_load)
 Event.register(defines.events.on_rocket_launched, function(event)
   pdnc_rocket_launch_counter()
 end)
