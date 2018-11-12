@@ -24,32 +24,20 @@ global.pdnc_rockets_launched_smooth = 0
 global.pdnc_alt_program = -1
 
 
-
+--[[
 function pdnc_setup()
 	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
-	pdnc_on_load()
 end
-
-function pdnc_on_load()
-	commands.add_command("rockets", "Total number of rockets launched on this node", game.print(global.pdnc_rockets_launched .. "rockets have been launched, blocking out ")
-end
-
-
-
-
+]]
 
 function pdnc_core()
 	pdnc_freeze_check()
+	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
 	local s = global.pdnc_surface
-	global.current_time = game.tick / game.surfaces[s].ticks_per_day
+	global.pdnc_current_time = game.tick / game.surfaces[s].ticks_per_day
 	global.pdnc_last_point = global.pdnc_current_point
-	if(global.pdnc_alt_program > -1) then
-		global.pdnc_current_point = {x = global.pdnc_current_time, y = global.pdnc_alt_program}
-	else
-		global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
-	end
-	
-	--global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()} -- needs to be changed to use 'next point' instead to avoid aligntment issues
+	global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
+
     local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
 	local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
 	
@@ -118,7 +106,7 @@ function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
 			a = global.pdnc_max_brightness
 		end
 		
-		if(pdnc_enable_rocket_darkness) then
+		if(global.pdnc_enable_rocket_darkness) then
 			b = 1 -  pdnc_rocket_launch_darkness()
 		end
 		
@@ -177,7 +165,7 @@ function pdnc_check_valid(n, s)
 	elseif (n > 1) then
 		pdnc_debug_message(s .. " cannot be " .. n .. " limited to 1.0 instead")
 		return false
-	elseif (n ~= n)
+	elseif (n ~= n) then
 		pdnc_debug_message(s .. " cannot be " .. n .. " since it's not a valid number!")
 	else return true
 	end
@@ -190,7 +178,7 @@ function pdnc_debug_message(s)
 end
 
 Event.register(-global.pdnc_stepsize, pdnc_core)
-Event.register(Event.core_events.init, pdnc_setup)
+--Event.register(Event.core_events.init, pdnc_setup)
 --Event.register(Event.core_events.load,pdnc_on_load)
 Event.register(defines.events.on_rocket_launched, function(event)
   pdnc_rocket_launch_counter()
