@@ -4,7 +4,7 @@
 
 global.modular_tag_patreon = global.modular_tag_patreon or {}
 global.modular_tag_patreon.patreons = {
-		{name = "I_IBlackI_I", tag = "Lua Hero", color = {r=1.0,g=1.0,b=1.0}, chat_color = nil},
+		{name = "I_IBlackI_I", tag = "Lua Hero", color = {r=0.0,g=1.0,b=1.0}, chat_color = {r=1.0,g=0.1,b=0.1}},
 		{name = "psihius", tag = "SysAdmin", color = nil, chat_color = nil},
 		{name = "Hornwitser", tag = "MoneyBags", color = nil, chat_color = nil},
 		{name = "jordank321", tag = "I'm not sure LMAO", color = nil, chat_color = nil},
@@ -41,24 +41,28 @@ function modular_tag_patreon_on_gui_click(event)
 		player.tag = "[Patreon]"
 	end
 	if (name == "modular_tag_patreon_unique_button") then
-		for i, patreon in pairs(global.modular_tag_patreon.patreons) do
-			if(player.name == patreon.name) then
-				if(patreon.tag ~= nil) then
-					player.tag = "[" .. patreon.tag .. "]"
-					player.print("Your unique tag has been applied!")
-				else 
-					player.print("O.o It seems you don't have a unique tag.. Please contact the admins to get one.")
-				end
-				if(patreon.color ~= nil) then
-					player.color = patreon.color
-					player.print("Your unique color has been applied!")
-				else 
-					player.print("o.O It seems you don't have a unique player-color.. Please contact the admins to get one.")
-				end
-				if(patreon.chat_color ~= nil) then
-					player.chat_color = patreon.chat_color
-					player.print("Your unique text-color has been applied!")
-				end
+		modular_tag_patreon_apply(player)
+	end
+end
+
+function modular_tag_patreon_apply(player)
+	for i, patreon in pairs(global.modular_tag_patreon.patreons) do
+		if(player.name == patreon.name) then
+			if(patreon.tag ~= nil) then
+				player.tag = "[" .. patreon.tag .. "]"
+				player.print("Your unique tag has been applied!")
+			else 
+				player.print("O.o It seems you don't have a unique tag.. Please contact the admins to get one.")
+			end
+			if(patreon.color ~= nil) then
+				player.color = patreon.color
+				player.print("Your unique color has been applied!")
+			else 
+				player.print("o.O It seems you don't have a unique player-color.. Please contact the admins to get one.")
+			end
+			if(patreon.chat_color ~= nil) then
+				player.chat_color = patreon.chat_color
+				player.print("Your unique text-color has been applied!")
 			end
 		end
 	end
@@ -102,26 +106,7 @@ function modular_tag_patreon_joined(event)
 	if(modular_tag_patreon_check(player)) then
 		modular_tag_patreon_create_gui(player)
 	end
-	for i, patreon in pairs(global.modular_tag_patreon.patreons) do
-		if(player.name == patreon.name) then
-			if(patreon.tag ~= nil) then
-				player.tag = "[" .. patreon.tag .. "]"
-				player.print("Unique tag applied automagically!")
-			else 
-				player.print("O.o It seems you don't have a unique tag.. Please contact the admins to get one.")
-			end
-			if(patreon.color ~= nil) then
-				player.color = patreon.color
-				player.print("Unique color applied automagically!")
-			else 
-				player.print("o.O It seems you don't have a unique color.. Please contact the admins to get one.")
-			end
-			if(patreon.chat_color ~= nil) then
-				player.chat_color = patreon.chat_color
-				player.print("Unique chat-color applied automagically!")
-			end
-		end
-	end
+	modular_tag_patreon_apply(player)
 end
 
 Event.register(defines.events.on_gui_click, modular_tag_patreon_on_gui_click)
