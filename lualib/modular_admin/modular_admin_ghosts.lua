@@ -32,12 +32,7 @@ function modular_admin_ghosts_create_force()
 	end
 end
 
-function modular_admin_ghosts_entity_mined(event)
-	if global.modular_admin_ghosts.enabled == false then 
-		return 
-	end
-	
-	local entity = event.entity
+function modular_admin_ghosts_invalid_entity(entity)
 	if entity.force.name == "neutral" 
 	or entity.name == "entity-ghost" 
 	or entity.type == "locomotive" 
@@ -45,12 +40,24 @@ function modular_admin_ghosts_entity_mined(event)
 	or entity.type == "fluid-wagon"
 	or entity.type == "car" 
 	or entity.type:find("robot") 
-	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-        or entity.name == "item-request-proxy"
+    or entity.name == "item-request-proxy"
 	or entity.name == "deconstructible-tile-proxy"
 	then 
+		return true
+	else
+		return false
+	end
+end
+
+function modular_admin_ghosts_entity_mined(event)
+	if global.modular_admin_ghosts.enabled == false then 
 		return 
+	end
+	
+	local entity = event.entity
+	if modular_admin_ghosts_invalid_entity(entity) or game.players[event.player_index].force == game.forces.Admins then
+		return
 	end
 	
 	local ghost = nil
@@ -72,18 +79,8 @@ function modular_admin_ghosts_entity_deconstructed(event)
 	end
 	
 	local entity = event.entity
-	if entity.force.name == "neutral" 
-	or entity.name == "entity-ghost" 
-	or entity.type == "locomotive" 
-	or entity.type == "cargo-wagon" 
-	or entity.type == "fluid-wagon"
-	or entity.type == "car" 
-	or entity.type:find("robot") 
-	or entity.name == "tile-ghost"
-        or entity.name == "item-request-proxy"
-	or entity.name == "deconstructible-tile-proxy"
-	then 
-		return 
+	if modular_admin_ghosts_invalid_entity(entity) then
+		return
 	end
 	
 	local ghost = nil
