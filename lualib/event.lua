@@ -289,7 +289,7 @@ local function run_protected(event, registered)
     end
 
     -- If the handler errors lets make sure someone notices
-    if not success and then
+    if not success then
         -- no players received the message, force a real error so someone notices
         error(err)
     end
