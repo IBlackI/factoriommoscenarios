@@ -18,7 +18,7 @@
 
 global.modular_information = global.modular_information or {}
 global.modular_information.button_must_be_selected = true
-global.modular_information.use_sprite_button_open = true
+global.modular_information.use_sprite_button_open = false
 global.modular_information.use_sprite_button_close = false
 global.modular_information.sprite_button_open_sprite = "utility/side_menu_tutorials_icon"
 global.modular_information.sprite_button_close_sprite = "utility/side_menu_tutorials_icon"
@@ -172,9 +172,9 @@ end
 function modular_information_gui_show(p)
 	global.modular_information.visible[p.name] = true
 	if global.modular_information.use_sprite_button_close then
-		topgui_add_button(p.name, {type="sprite-button", name = "modular_information_toggle_button", sprite = global.modular_information.sprite_button_close_sprite, tooltip=global.modular_information.sprite_button_close_tooltip})
+		topgui_add_button(p.name, {type="sprite-button", name = "modular_information_toggle_button", sprite = global.modular_information.sprite_button_close_sprite, tooltip=global.modular_information.sprite_button_close_tooltip, order = 5})
 	else 
-		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_close_caption, color = {r=1, g=0, b=0}})
+		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_close_caption, color = {r=1, g=0, b=0}, order = 5})
 	end
 	local mif = modular_information_get_flow(p)
 	mif.style.visible = global.modular_information.visible[p.name]
@@ -183,9 +183,9 @@ end
 function modular_information_gui_hide(p)
 	global.modular_information.visible[p.name] = false
 	if global.modular_information.use_sprite_button_open then
-		topgui_add_button(p.name, {type="sprite-button", name = "modular_information_toggle_button", sprite = global.modular_information.sprite_button_open_sprite, tooltip=global.modular_information.sprite_button_open_tooltip})
+		topgui_add_button(p.name, {type="sprite-button", name = "modular_information_toggle_button", sprite = global.modular_information.sprite_button_open_sprite, tooltip=global.modular_information.sprite_button_open_tooltip, order = 5})
 	else 
-		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_open_caption, color = {r=0, g=1, b=0}})
+		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_open_caption, color = {r=0, g=1, b=0}, order = 5})
 	end
 	local mif = modular_information_get_flow(p)
 	mif.style.visible = global.modular_information.visible[p.name]

@@ -12,7 +12,7 @@
 
 global.modular_admin = global.modular_admin or {}
 
-global.modular_admin.use_sprite_button_open = true
+global.modular_admin.use_sprite_button_open = false
 global.modular_admin.use_sprite_button_close = false
 global.modular_admin.sprite_button_open_sprite = "utility/side_menu_bonus_icon"
 global.modular_admin.sprite_button_close_sprite = "utility/side_menu_bonus_icon"
@@ -104,16 +104,16 @@ function modular_admin_gui_toggle_visibility(p)
 	if global.modular_admin.visible[p.name] then
 		global.modular_admin.visible[p.name] = false
 		if global.modular_admin.use_sprite_button_open then
-			topgui_add_button(p.name, {type="sprite-button", name = "modular_admin_toggle_button", sprite = global.modular_admin.sprite_button_open_sprite, tooltip=global.modular_admin.sprite_button_open_tooltip})
+			topgui_add_button(p.name, {type="sprite-button", name = "modular_admin_toggle_button", sprite = global.modular_admin.sprite_button_open_sprite, tooltip=global.modular_admin.sprite_button_open_tooltip, order = 1})
 		else 
-			topgui_add_button(p.name, {name = "modular_admin_toggle_button", caption = global.modular_admin.button_open_caption, color = {r=0, g=1, b=0}})
+			topgui_add_button(p.name, {name = "modular_admin_toggle_button", caption = global.modular_admin.button_open_caption, color = {r=0, g=1, b=0}, order = 1})
 		end
 	else
 		global.modular_admin.visible[p.name] = true
 		if global.modular_admin.use_sprite_button_close then
-			topgui_add_button(p.name, {type="sprite-button", name = "modular_admin_toggle_button", sprite = global.modular_admin.sprite_button_close_sprite, tooltip=global.modular_admin.sprite_button_close_tooltip})
+			topgui_add_button(p.name, {type="sprite-button", name = "modular_admin_toggle_button", sprite = global.modular_admin.sprite_button_close_sprite, tooltip=global.modular_admin.sprite_button_close_tooltip, order = 1})
 		else 
-			topgui_add_button(p.name, {name = "modular_admin_toggle_button", caption = global.modular_admin.button_close_caption, color = {r=1, g=0, b=0}})
+			topgui_add_button(p.name, {name = "modular_admin_toggle_button", caption = global.modular_admin.button_close_caption, color = {r=1, g=0, b=0}, order = 1})
 		end
 	end
 	local tg = modular_admin_get_flow(p)
