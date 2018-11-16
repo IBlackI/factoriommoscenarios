@@ -55,7 +55,7 @@ function modular_tag_patreon_on_gui_click(event)
 				else 
 					player.print("o.O It seems you don't have a unique player-color.. Please contact the admins to get one.")
 				end
-				if(patreon.color ~= nil) then
+				if(patreon.chat_color ~= nil) then
 					player.chat_color = patreon.chat_color
 					player.print("Your unique text-color has been applied!")
 				end
