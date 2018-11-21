@@ -24,7 +24,9 @@ require "lualib/pdnc" --Zr's fancy day-night cycle stuff
 --not yet ready!!!
 --require "lualib/doomsday" -- enables the doomsday module. Default to start doomsday after 3h
 
--- require "wg_jungle" --Jungle World Generator, generates a world full of trees!
+-- MAP GENERATORS
+-- require "maps/grid"
+-- require "maps/wg_jungle" --Jungle World Generator, generates a world full of trees!
 
 require "debug"
 
