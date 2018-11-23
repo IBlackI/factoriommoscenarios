@@ -9,6 +9,7 @@
 
 -- lamps enable darkness: [0.595 - 0.425] scaled to [0.0 - 0.85] range from [0.0 - 1.0] range
 
+global.pdnc_enabled = true 
 global.pdnc_stepsize = 21 -- also used for script.on_nth_tick
 global.pdnc_surface = 1
 global.pdnc_current_time = 0
@@ -21,45 +22,100 @@ global.pdnc_enable_rocket_darkness = true
 global.pdnc_rockets_launched = 0
 global.pdnc_rockets_launched_step_size = 0.025
 global.pdnc_rockets_launched_smooth = 0
-global.pdnc_alt_program = -1
 
-
---[[
 function pdnc_setup()
 	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
+	pdnc_on_load()
 end
-]]
+
+function pdnc_on_load()
+	commands.add_command("pdnc", "gives PDNC's status", pdnc_print_status)
+	commands.add_command("pdnc_toggle", "toggles pdnc", pdnc_toggle)
+	commands.add_command("pdnc_toggle_debug", "toggles pdnc debug mode", pdnc_toggle_debug)
+end
+
+function pdnc_toggle_debug()
+	global.pdnc_debug = not global.pdnc_debug
+	pdnc_print_status()
+end
+
+function pdnc_toggle()
+	global.pdnc_enabled = not global.pdnc_enabled
+	pdnc_print_status()
+end
+
+function pdnc_print_status()
+	if(global.pdnc_enabled)then
+		game.print("PDNC is enabled")
+	else
+		game.print("PDNC is disabled")
+	end
+	
+	if(global.pdnc_debug)then
+		game.print("PDNC debug is enabled")
+		pdnc_extended_status()
+	else
+		game.print("PDNC debug is disabled")
+	end
+end
+
+function pdnc_extended_status()
+	game.print("global.pdnc_stepsize: " .. global.pdnc_stepsize)
+	game.print("global.pdnc_surface: " .. global.pdnc_surface)
+	game.print("global.pdnc_current_time: " .. global.pdnc_current_time)
+	game.print("global.pdnc_current_point x, y: " .. global.pdnc_current_point.x .. ", " .. global.pdnc_current_point.y)
+	game.print("global.pdnc_last_point x, y: " .. global.pdnc_last_point.x .. ", " .. global.pdnc_last_point.y)
+	game.print("global.pdnc_max_brightness: " .. global.pdnc_max_brightness)
+	game.print("global.pdnc_enable_brightness_limit: " .. pdnc_bool_to_string(global.pdnc_enable_brightness_limit))
+	game.print("global.pdnc_enable_rocket_darkness: " .. pdnc_bool_to_string(global.pdnc_enable_rocket_darkness))
+	game.print("global.pdnc_rockets_launched: " .. global.pdnc_rockets_launched)
+	game.print("global.pdnc_rockets_launched_step_size: " .. global.pdnc_rockets_launched_step_size)
+	game.print("global.pdnc_stepsize: " .. global.pdnc_stepsize)
+	game.print("global.pdnc_rockets_launched_smooth: " .. global.pdnc_rockets_launched_smooth)
+	game.print("ticks per day: " .. game.surfaces[global.pdnc_surface].ticks_per_day)
+	game.print("current tick: " .. game.tick)
+end
+
+function pdnc_bool_to_string(b)
+	if(b)then
+		return "true"
+	else
+		return "false"
+	end
+end
 
 function pdnc_core()
-	pdnc_freeze_check()
-	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
-	local s = global.pdnc_surface
-	global.pdnc_current_time = game.tick / game.surfaces[s].ticks_per_day
-	global.pdnc_last_point = global.pdnc_current_point
-	global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
+	if(global.pdnc_enabled)then
+		pdnc_freeze_check()
+		game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
+		local s = global.pdnc_surface
+		global.pdnc_current_time = game.tick / game.surfaces[s].ticks_per_day
+		global.pdnc_last_point = global.pdnc_current_point
+		global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
 
-    local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
-	local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
-	
-	-- the order is dusk - evening - morning - dawn. They *must* be in that order and they cannot be equal
-	if(top_point < bot_point) then -- dusk -> evening
-		pdnc_cleanup_last_tick(s)
-		game.surfaces[s].evening = bot_point - global.pdnc_current_time
-		game.surfaces[s].dusk = top_point - global.pdnc_current_time
-	elseif(top_point > bot_point) then -- morning -> dawn
-		pdnc_cleanup_last_tick(s)
-		game.surfaces[s].morning = bot_point - global.pdnc_current_time
-		game.surfaces[s].dawn = top_point - global.pdnc_current_time
-	elseif(top_point == bot_point) then
-		pdnc_debug_message("PDNC: Top and bot point equal")
-		-- no cleanup is done here
-		-- if the points are equal, use last value until not equal
-		-- this should never be reached unless the pdnc_program() is broken.
-	else
-		pdnc_debug_message("Top and bot not different nor equal. probably a NaN error")
-		pdnc_debug_message("bot_point: " .. bot_point)
-		pdnc_debug_message("top_point: " .. top_point)
-		-- this should never be reached.
+		local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
+		local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
+		
+		-- the order is dusk - evening - morning - dawn. They *must* be in that order and they cannot be equal
+		if(top_point < bot_point) then -- dusk -> evening
+			pdnc_cleanup_last_tick(s)
+			game.surfaces[s].evening = bot_point - global.pdnc_current_time
+			game.surfaces[s].dusk = top_point - global.pdnc_current_time
+		elseif(top_point > bot_point) then -- morning -> dawn
+			pdnc_cleanup_last_tick(s)
+			game.surfaces[s].morning = bot_point - global.pdnc_current_time
+			game.surfaces[s].dawn = top_point - global.pdnc_current_time
+		elseif(top_point == bot_point) then
+			pdnc_debug_message("PDNC: Top and bot point equal")
+			-- no cleanup is done here
+			-- if the points are equal, use last value until not equal
+			-- this should never be reached unless the pdnc_program() is broken.
+		else
+			pdnc_debug_message("Top and bot not different nor equal. probably a NaN error")
+			pdnc_debug_message("bot_point: " .. bot_point)
+			pdnc_debug_message("top_point: " .. top_point)
+			-- this should never be reached.
+		end
 	end
 end
 
@@ -177,9 +233,9 @@ function pdnc_debug_message(s)
 	end
 end
 
-Event.register(-global.pdnc_stepsize, pdnc_core)
---Event.register(Event.core_events.init, pdnc_setup)
---Event.register(Event.core_events.load,pdnc_on_load)
+Event.register(-global.pdnc_stepsize, pdnc_core) -- negative numbers to use on_nth_tick
+Event.register(Event.core_events.init, pdnc_setup)
+Event.register(Event.core_events.load, pdnc_on_load)
 Event.register(defines.events.on_rocket_launched, function(event)
   pdnc_rocket_launch_counter()
 end)
