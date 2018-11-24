@@ -2,23 +2,39 @@
 -- made by Zr4g0n
 -- this module currently has issues with the event module and 'on nth tick'. 
 require "lualib/pdnc" --is this the best way to do this?
-global.doomsday_start_time = -30.75 -- in ingame days. 
-global.doomsday_pollution_multiplier = 5000
+global.doomsday = global.doomsday or {} -- used to check if this exists. 
+global.doomsday_start = 30.75 -- in ingame days. Use n.75 to make sure doomsday is at midnight. 
+global.doomsday_pollution = 20000 -- amount to be applied per tick
+global.doomsday_surfance = 1
 --[[ available:
 global.current_time
 global.pdnc_surface
 
 ]]
-
-function doomsday_on_load()
-		commands.add_command("timeleft", "Gives you the time till doomsday!", pdnc_doomsday_time_left)
+function doomsday_status()
+	game.print("Doomsday loaded!")
+	game.print("global.doomsday_start " .. global.doomsday_start)
+	game.print("global.doomsday_pollution " .. global.doomsday_pollution)
+	game.print("global.doomsday_surfance " .. global.doomsday_surfance)
+	--game.print(" " .. )
+	--game.print(" " .. )
 end
 
-function doomsday_pdnc_program()
-	local current_time = global.pdnc_current_time -- intentionally reading from pdnc
+function doomsday_setup()
+	doomsday_on_load()
+end
+
+function doomsday_on_load()
+	commands.add_command("timeleft", "Gives you the time till doomsday!", doomsday_time_left)
+	commands.add_command("doomsday", "Prints doomsday status", doomsday_status)
+end
+
+function doomsday_core()
+	local current_time = game.tick / game.surfaces[global.doomsday_surfance].ticks_per_day
+	local x = current_time * 6.2831853 --2pi
 	local returnvalue = 0
 	local radius = 512 --make global
-	local pollution = 10000 -- total pollution applied per tick
+	local pollution = global.doomsday_pollution -- total pollution applied per tick
 	local nodes = 16 -- the number of nodes to spread
 	if (current_time < global.doomsday_start) then
 		returnvalue = math.pow(pdnc_c_boxy(x), (1 + current_time / 4))
@@ -31,7 +47,7 @@ function doomsday_pdnc_program()
 		global.pdnc_enable_brightness_limit = true
 		returnvalue = math.pow(pdnc_c_boxy(x), 6.125)--*0.5
 	end
-	global.pdnc_alt_program = returnvalue * 0.85
+	return pdnc_scaler(returnvalue)
 end
 
 function doomsday_normal_curve(x)
@@ -40,21 +56,19 @@ function doomsday_normal_curve(x)
 end
 
 function doomsday_pollute(radius,pollution,nodes)
-	local p = global.pdnc_stepsize * pollution
+	local p = global.pdnc_stepsize * pollution -- needed to make it 'step size independant'
 	p = p / nodes
 	local position = {x = 0.0, y = 0.0}
-	game.surfaces[global.pdnc_surface].pollute(position, p) --circle + center point
+	game.surfaces[global.doomsday_surfance].pollute(position, p) --circle + center point
 	local step = (math.pi * 2) / (nodes - 1)
 	for i=0, (nodes - 1) do 
 		position = {x = math.sin(step*i)*radius, y = math.cos(step*i)*radius}		 
-		game.surfaces[global.pdnc_surface].pollute(position, p)
+		game.surfaces[global.doomsday_surfance].pollute(position, p)
 	end
-	
 end
 
-
 function doomsday_time_left()
-	local ticks_until_doomsday = game.surfaces[global.pdnc_surface].ticks_per_day * global.doomsday_start
+	local ticks_until_doomsday = game.surfaces[global.doomsday_surfance].ticks_per_day * global.doomsday_start
 	local ticks = ticks_until_doomsday - game.tick
 	if (ticks >= 0) then 
 		local seconds = math.floor(ticks/ 60)
@@ -82,5 +96,7 @@ end
 ]]
 
 
-Event.register(-20, doomsday_pdnc_program) --intentionally using the PDNC stepsize so the functions sync
-Event.register(Event.core_events.load,doomsday_on_load)
+--Event.register(-20, doomsday_pdnc_program) --intentionally using the PDNC stepsize so the functions sync
+-- this can be skipped, since it's called from pdnc!
+Event.register(Event.core_events.init, doomsday_setup)
+Event.register(Event.core_events.load, doomsday_on_load)

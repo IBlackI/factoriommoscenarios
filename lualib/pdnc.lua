@@ -8,7 +8,7 @@
 -- Handle 'next time' elegantly
 
 -- lamps enable darkness: [0.595 - 0.425] scaled to [0.0 - 0.85] range from [0.0 - 1.0] range
-
+global.pdnc = global.pdnc or {}
 global.pdnc_enabled = true 
 global.pdnc_stepsize = 21 -- also used for script.on_nth_tick
 global.pdnc_surface = 1
@@ -92,7 +92,14 @@ function pdnc_core()
 		global.pdnc_current_time = game.tick / game.surfaces[s].ticks_per_day
 		global.pdnc_last_point = global.pdnc_current_point
 		global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
-
+		
+		if(global.doomsday ~= nil)then
+			global.pdnc_current_point = {x = global.pdnc_current_time, y = doomsday_core()}
+		--elseif(global.eternal_night ~= nil)then
+		--	global.pdnc_current_point = {x = global.pdnc_current_time, y = eternal_night_core()}
+		else
+			global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
+		end
 		local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
 		local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
 		
