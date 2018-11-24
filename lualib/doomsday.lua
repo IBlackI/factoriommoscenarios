@@ -2,6 +2,7 @@
 -- made by Zr4g0n
 -- this module currently has issues with the event module and 'on nth tick'. 
 require "lualib/pdnc" --is this the best way to do this?
+global.doomsday_enabled = true
 global.doomsday = global.doomsday or {} -- used to check if this exists. 
 global.doomsday_start = 30.75 -- in ingame days. Use n.75 to make sure doomsday is at midnight. 
 global.doomsday_pollution = 20000 -- amount to be applied per tick
@@ -13,11 +14,16 @@ global.pdnc_surface
 ]]
 function doomsday_status()
 	game.print("Doomsday loaded!")
-	game.print("global.doomsday_start " .. global.doomsday_start)
-	game.print("global.doomsday_pollution " .. global.doomsday_pollution)
-	game.print("global.doomsday_surfance " .. global.doomsday_surfance)
+	game.print("global.doomsday_start: " .. global.doomsday_start)
+	game.print("global.doomsday_pollution: " .. global.doomsday_pollution)
+	game.print("global.doomsday_surfance: " .. global.doomsday_surfance)
+	game.print("global.doomsday_enabled: " .. pdnc_bool_to_string(global.doomsday_enabled))
 	--game.print(" " .. )
-	--game.print(" " .. )
+end
+
+function doomsday_toggle()
+	global.doomsday_enabled ~= global.doomsday_enabled
+	doomsday_status()
 end
 
 function doomsday_setup()
@@ -68,21 +74,25 @@ function doomsday_pollute(radius,pollution,nodes)
 end
 
 function doomsday_time_left()
-	local ticks_until_doomsday = game.surfaces[global.doomsday_surfance].ticks_per_day * global.doomsday_start
-	local ticks = ticks_until_doomsday - game.tick
-	if (ticks >= 0) then 
-		local seconds = math.floor(ticks/ 60)
-		local minutes = math.floor(seconds / 60)
-		local hours = math.floor(minutes / 60)
-		local days = math.floor(hours / 24)
-		game.print("time until doomsday: " .. string.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60))
+	if (doomsday_start > 0)then
+		local ticks_until_doomsday = game.surfaces[global.doomsday_surfance].ticks_per_day * global.doomsday_start
+		local ticks = ticks_until_doomsday - game.tick
+		if (ticks >= 0) then 
+			local seconds = math.floor(ticks/ 60)
+			local minutes = math.floor(seconds / 60)
+			local hours = math.floor(minutes / 60)
+			local days = math.floor(hours / 24)
+			game.print("time until doomsday: " .. string.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60))
+		else
+			ticks = ticks * -1 
+			local seconds = math.floor(ticks / 60)
+			local minutes = math.floor(seconds / 60)
+			local hours = math.floor(minutes / 60)
+			local days = math.floor(hours / 24)
+			game.print("Doomsday was: " .. string.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60) .. " ago...")
+		end
 	else
-		ticks = ticks * -1 
-		local seconds = math.floor(ticks / 60)
-		local minutes = math.floor(seconds / 60)
-		local hours = math.floor(minutes / 60)
-		local days = math.floor(hours / 24)
-		game.print("Doomsday was: " .. string.format("%d:%02d:%02d", hours, minutes % 60, seconds % 60) .. " ago...")
+		game.print("Nothing to see here, move along! No doomsday here, nope!")
 	end
 end
 

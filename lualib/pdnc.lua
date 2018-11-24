@@ -93,7 +93,7 @@ function pdnc_core()
 		global.pdnc_last_point = global.pdnc_current_point
 		global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
 		
-		if(global.doomsday ~= nil)then
+		if(global.doomsday ~= nil) and (global.doomsday_enabled)then
 			global.pdnc_current_point = {x = global.pdnc_current_time, y = doomsday_core()}
 		--elseif(global.eternal_night ~= nil)then
 		--	global.pdnc_current_point = {x = global.pdnc_current_time, y = eternal_night_core()}
