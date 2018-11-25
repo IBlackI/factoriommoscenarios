@@ -51,13 +51,15 @@ function modular_information_scenario_gui_clicked(event)
 			misesb.style.font_color = {r = 0, g = 1, b = 0}
 			local misecb = misbhf.add {type = "button", name = "modular_information_scenario_edit_clear_button", caption = "Clear text"}
 			misecb.style.font_color = {r = 0.5, g = 0.5, b = 0}
-			local mis = misbhf.add {type = "button", name = "modular_information_scenario", caption = "Cancel"}
+			local mis = misbhf.add {type = "button", name = "modular_information_scenario_cancel_button", caption = "Cancel"}
 			mis.style.font_color = {r = 1, g = 0, b = 0}
 		elseif e.name == "modular_information_scenario_edit_save_button" then
 			global.modular_information_scenario.text = modular_information_get_information_pane(p).modular_information_scenario_edit_textbox.text
 			modular_information_scenario_create_gui(p)
 		elseif e.name == "modular_information_scenario_edit_clear_button" then
 			modular_information_get_information_pane(p).modular_information_scenario_edit_textbox.text = " "
+		elseif e.name == "modular_information_scenario_cancel_button" then
+			modular_information_scenario_create_gui(p)
 		end
 	end
 end
