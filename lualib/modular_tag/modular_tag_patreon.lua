@@ -16,7 +16,7 @@ global.modular_tag_patreon.patreons = {
 		{name = "Uriopass", tag = "Ratio Maniac", color = nil, chat_color = nil},
 		{name = "audigex", tag = "Spaghetti Monster", color = nil, chat_color = nil},
 		{name = "Sergeant_Steve", tag = "Biter Killer", color = { r = 0.0, g = 0.0, b = 1.0}, chat_color = { r = 0.35, g = 0.4, b = 1.0}},
-		{name = "Zr4g0n", tag = "Totally not a dragon!", color = { r = 0.227, g = 0.263, b = 0.639}, chat_color = { r = 0.455, g = 0.506, b = 0.871}},
+		{name = "Zr4g0n", tag = "Totally not a dragon!", color = { r = 0.306, g = 0.569, b = 1.000}, chat_color = { r = 0.200, g = 0.300, b = 1.000}},
 		{name = "LordKiwi", tag = nil, color = nil, chat_color = nil},
 		{name = "stik", tag = nil, color = nil, chat_color = nil},
 		{name = "Zirr", tag = nil, color = nil, chat_color = nil},
