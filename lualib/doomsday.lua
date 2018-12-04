@@ -74,7 +74,7 @@ function doomsday_pollute(radius,pollution,nodes)
 end
 
 function doomsday_time_left()
-	if (doomsday_start > 0)then
+	if (global.doomsday_start > 0)then
 		local ticks_until_doomsday = game.surfaces[global.doomsday_surfance].ticks_per_day * global.doomsday_start
 		local ticks = ticks_until_doomsday - game.tick
 		if (ticks >= 0) then 
