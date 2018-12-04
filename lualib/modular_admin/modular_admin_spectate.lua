@@ -156,7 +156,7 @@ function modular_admin_spectate_set_normal_teleport(p)
 	modular_admin_spectate_set_normal(p)
 	if global.modular_admin_spectate.player_spectator_state[p.index] == false then
 		p.print("Teleporting you to the location you are currently looking at.")
-		p.teleport(pos)
+		p.teleport(p.surface.find_non_colliding_position("player", pos))
 	end
 end
 
