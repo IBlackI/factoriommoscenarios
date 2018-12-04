@@ -22,7 +22,7 @@ function doomsday_status()
 end
 
 function doomsday_toggle()
-	global.doomsday_enabled ~= global.doomsday_enabled
+	global.doomsday_enabled = not global.doomsday_enabled
 	doomsday_status()
 end
 
