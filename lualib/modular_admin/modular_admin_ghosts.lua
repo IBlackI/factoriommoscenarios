@@ -15,7 +15,7 @@
 --
 
 global.modular_admin_ghosts = global.modular_admin_ghosts or {}
-global.modular_admin_ghosts.enabled = false
+global.modular_admin_ghosts.enabled = true
 global.modular_admin_ghosts.force_charting_enabled = true
 
 --
@@ -32,9 +32,7 @@ function modular_admin_ghosts_create_force()
 	end
 end
 
-function modular_admin_ghosts_entity_mined(event)
-	if global.modular_admin_ghosts.enabled == false then return end
-	local entity = event.entity
+function modular_admin_ghosts_invalid_entity(entity)
 	if entity.force.name == "neutral" 
 	or entity.name == "entity-ghost" 
 	or entity.type == "locomotive" 
@@ -42,10 +40,26 @@ function modular_admin_ghosts_entity_mined(event)
 	or entity.type == "fluid-wagon"
 	or entity.type == "car" 
 	or entity.type:find("robot") 
-	or game.players[event.player_index].force == game.forces.Admins 
 	or entity.name == "tile-ghost"
-    or entity.name == 'item-request-proxy'
-	then return end
+    or entity.name == "item-request-proxy"
+	or entity.name == "deconstructible-tile-proxy"
+	then 
+		return true
+	else
+		return false
+	end
+end
+
+function modular_admin_ghosts_entity_mined(event)
+	if global.modular_admin_ghosts.enabled == false then 
+		return 
+	end
+	
+	local entity = event.entity
+	if modular_admin_ghosts_invalid_entity(entity) or game.players[event.player_index].force == game.forces.Admins then
+		return
+	end
+	
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
@@ -60,18 +74,15 @@ function modular_admin_ghosts_entity_mined(event)
 end
 
 function modular_admin_ghosts_entity_deconstructed(event)
-	if global.modular_admin_ghosts.enabled == false then return end
+	if global.modular_admin_ghosts.enabled == false then 
+		return 
+	end
+	
 	local entity = event.entity
-	if entity.force.name == "neutral" 
-	or entity.name == "entity-ghost" 
-	or entity.type == "locomotive" 
-	or entity.type == "cargo-wagon" 
-	or entity.type == "fluid-wagon"
-	or entity.type == "car" 
-	or entity.type:find("robot") 
-	or entity.name == "tile-ghost"
-    or entity.name == 'item-request-proxy'
-	then return end
+	if modular_admin_ghosts_invalid_entity(entity) then
+		return
+	end
+	
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
@@ -110,7 +121,7 @@ Event.register(defines.events.on_tick, modular_admin_ghosts_chart)
 Event.register(defines.events.on_pre_player_mined_item, modular_admin_ghosts_entity_mined)
 Event.register(defines.events.on_robot_pre_mined, modular_admin_ghosts_entity_deconstructed)
 
-Event.register(-1, function(event)
+Event.register(Event.core_events.init, function(event)
 	if(global.modular_admin_ghosts.enabled) then
 		modular_admin_add_submodule("modular_admin_ghosts")
 	else

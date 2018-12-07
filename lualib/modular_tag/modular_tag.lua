@@ -3,7 +3,7 @@
 
 global.modular_tag = global.modular_tag or {}
 
-global.modular_tag.use_sprite_button_open = true
+global.modular_tag.use_sprite_button_open = false
 global.modular_tag.use_sprite_button_close = false
 global.modular_tag.sprite_button_open_sprite = "utility/side_menu_achievements_icon"
 global.modular_tag.sprite_button_close_sprite = "utility/side_menu_achievements_icon"
@@ -45,15 +45,15 @@ function modular_tag_create_gui(event)
 	global.modular_tag.visible[p.name] = global.modular_tag.visible[p.name] or false
 	if global.modular_tag.visible[p.name] then
 		if global.modular_tag.use_sprite_button_close then
-			topgui_add_button(p.name, {type="sprite-button", name = "modular_tag_toggle_button", sprite = global.modular_tag.sprite_button_close_sprite, tooltip=global.modular_tag.sprite_button_close_tooltip})
+			topgui_add_button(p.name, {type="sprite-button", name = "modular_tag_toggle_button", sprite = global.modular_tag.sprite_button_close_sprite, tooltip=global.modular_tag.sprite_button_close_tooltip, order = 11})
 		else 
-			topgui_add_button(p.name, {name = "modular_tag_toggle_button", caption = global.modular_tag.button_close_caption, color = {r=1, g=0, b=0}})
+			topgui_add_button(p.name, {name = "modular_tag_toggle_button", caption = global.modular_tag.button_close_caption, color = {r=1, g=0, b=0}, order = 11})
 		end
 	else
 		if global.modular_tag.use_sprite_button_open then
-			topgui_add_button(p.name, {type="sprite-button", name = "modular_tag_toggle_button", sprite = global.modular_tag.sprite_button_open_sprite, tooltip=global.modular_tag.sprite_button_open_tooltip})
+			topgui_add_button(p.name, {type="sprite-button", name = "modular_tag_toggle_button", sprite = global.modular_tag.sprite_button_open_sprite, tooltip=global.modular_tag.sprite_button_open_tooltip, order = 11})
 		else 
-			topgui_add_button(p.name, {name = "modular_tag_toggle_button", caption = global.modular_tag.button_open_caption, color = {r=0, g=1, b=0}})
+			topgui_add_button(p.name, {name = "modular_tag_toggle_button", caption = global.modular_tag.button_open_caption, color = {r=0, g=1, b=0}, order = 11})
 		end
 	end
 	modular_tag_update_gui(player)

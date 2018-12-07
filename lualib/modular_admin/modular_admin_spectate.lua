@@ -156,7 +156,7 @@ function modular_admin_spectate_set_normal_teleport(p)
 	modular_admin_spectate_set_normal(p)
 	if global.modular_admin_spectate.player_spectator_state[p.index] == false then
 		p.print("Teleporting you to the location you are currently looking at.")
-		p.teleport(pos)
+		p.teleport(p.surface.find_non_colliding_position("player", pos))
 	end
 end
 
@@ -168,15 +168,16 @@ function modular_admin_spectate_set_spectator(p)
 				p.character.destructible = false
 				p.walking_state = { walking = false, direction = defines.direction.north }
 				global.modular_admin_spectate.player_spectator_character[index] = p.character
-				global.modular_admin_spectate.player_spectator_force[index] = p.force
 				--store character logistics slots due to an apparent bug in the base game that discards them when returning from spectate
 				global.modular_admin_spectate.player_spectator_logistics_slots[index] = {}
 				for slot=1, p.character.request_slot_count do
 					global.modular_admin_spectate.player_spectator_logistics_slots[index][slot] = p.character.get_request_slot(slot)
 				end
 				p.set_controller { type = defines.controllers.god }
-				p.cheat_mode = true
+				
 			end
+			global.modular_admin_spectate.player_spectator_force[index] = p.force
+			p.cheat_mode = true
 			if game.forces.Admins ~= nil then
 				p.force = game.forces["Admins"]
 			end
@@ -302,7 +303,7 @@ Event.register(defines.events.on_player_left_game, modular_admin_spectate_connec
 Event.register(defines.events.on_player_joined_game, modular_admin_spectate_connected_players_changed)
 Event.register(defines.events.on_gui_click, modular_admin_spectate_gui_clicked)
 
-Event.register(-1, function(event)
+Event.register(Event.core_events.init, function(event)
 		if(global.modular_admin_spectate.enabled) then
 			modular_admin_add_submodule("modular_admin_spectate")
 			if global.modular_admin_spectate.follow_enabled then
