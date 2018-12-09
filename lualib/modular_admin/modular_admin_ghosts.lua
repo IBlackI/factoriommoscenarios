@@ -92,7 +92,14 @@ function modular_admin_ghosts_entity_deconstructed(event)
 		{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	end
 	if ghost ~= nil then
-		ghost.last_user = entity.last_user
+		if entity ~= nil then
+			if entity.last_user ~= nil then
+				ghost.last_user = entity.last_user
+			else
+				log("Entity : " .. entity.name .. " of inner_name: " .. entity.inner_name .. "didn't have a last_user when trying to create a ghost by a robot")
+			end
+		end
+		
 	end
 end
 
