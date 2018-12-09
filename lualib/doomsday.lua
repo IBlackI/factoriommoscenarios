@@ -7,18 +7,18 @@ global.doomsday = global.doomsday or {} -- used to check if this exists.
 global.doomsday_start = 30.75 -- in ingame days. Use n.75 to make sure doomsday is at midnight. 
 global.doomsday_pollution = 20000 -- amount to be applied per tick
 global.doomsday_surfance = 1
---[[ available:
-global.current_time
-global.pdnc_surface
+global.doomsday_enable_players_online_compensator = true
+global.doomsday_current_fuzzy_playercount = 1.5 -- start assuming 1.5 players! :V
 
-]]
 function doomsday_status()
 	game.print("Doomsday loaded!")
 	game.print("global.doomsday_start: " .. global.doomsday_start)
 	game.print("global.doomsday_pollution: " .. global.doomsday_pollution)
 	game.print("global.doomsday_surfance: " .. global.doomsday_surfance)
 	game.print("global.doomsday_enabled: " .. pdnc_bool_to_string(global.doomsday_enabled))
-	--game.print(" " .. )
+	game.print("global.doomsday_enable_players_online_compensator: " .. pdnc_bool_to_string(global.doomsday_enable_players_online_compensator))
+	game.print("global.doomsday_current_fuzzy_playercount: " .. global.doomsday_current_fuzzy_playercount)
+	--game.print(": " .. )
 end
 
 function doomsday_toggle()
@@ -36,6 +36,10 @@ function doomsday_on_load()
 end
 
 function doomsday_core()
+	if(global.doomsday_enable_players_online_compensator)then
+		doomsday_players_online_compensator()
+	end
+
 	local current_time = game.tick / game.surfaces[global.doomsday_surfance].ticks_per_day
 	local x = current_time * 6.2831853 --2pi
 	local returnvalue = 0
@@ -94,6 +98,32 @@ function doomsday_time_left()
 	else
 		game.print("Nothing to see here, move along! No doomsday here, nope!")
 	end
+end
+
+function doomsday_players_online_compensator()
+	local target = #game.connected_players
+	local current = global.doomsday_current_fuzzy_playercount
+	local step_size = 0.02 -- (at 21 ticks per iteration, that's 17.5sec per player change.
+	
+	if(current < 0)then
+		game.print("Error; 'current' number of players' is less than 0!")
+	end
+	if(target < 0)then
+		game.print("Error; 'number of players' is less than 0!")
+	end
+	
+	if(current == target) then
+		-- do nothing, this should be most of the time
+	elseif ( current < target) then
+		current = current + step_size
+	elseif ( current > target) then
+		current = current - step_size
+	else 
+		-- do nothing?
+	end
+	local modifier = 20/(0.1 * current * current + 6) -- Nice, smooth curve that should hopefully give boost equal to the playercount!
+	game.forces.player.character_running_speed_modifier = modifier
+	global.doomsday_current_fuzzy_playercount = current
 end
 
 --[[
