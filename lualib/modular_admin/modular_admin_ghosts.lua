@@ -96,7 +96,7 @@ function modular_admin_ghosts_entity_deconstructed(event)
 			if entity.last_user ~= nil then
 				ghost.last_user = entity.last_user
 			else
-				log("Entity : " .. entity.name .. " of inner_name: " .. entity.inner_name .. "didn't have a last_user when trying to create a ghost by a robot")
+				log("Entity : " .. entity.name .. " of type: " .. entity.type .. "didn't have a last_user when trying to create a ghost by a robot")
 			end
 		end
 		
