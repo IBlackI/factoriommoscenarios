@@ -122,7 +122,7 @@ function doomsday_players_online_compensator()
 		-- do nothing?
 	end
 	local modifier = 20/(0.1 * current * current + 6) -- Nice, smooth curve that should hopefully give boost equal to the playercount!
-	game.forces.player.character_running_speed_modifier = modifier * 0.7
+	game.forces.player.character_running_speed_modifier = modifier
 	global.doomsday_current_fuzzy_playercount = current
 end
 
