@@ -30,6 +30,8 @@ global.modular_tag_patreon.patreons = {
 		{name = "Twinsen", tag = "Factorio Developer", color = nil, chat_color = nil},
 		{name = "SpennyDurp", tag = "I WILL Break It", color = nil, chat_color = nil},
 		{name = "Alkumist", tag = "Snoot booper :3", color = { r = 1.0, g = 1.0, b = 0.0}, chat_color = nil}
+		{name = "Fishbone5618", tag = "Fear Da Fish", color = { r = 0.0, g = 0.0, b = 0.0}, chat_color = nil}
+		
 }
 
 function modular_tag_patreon_on_gui_click(event)
