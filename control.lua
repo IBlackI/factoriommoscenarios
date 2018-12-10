@@ -22,7 +22,7 @@ require "equipment"
 require "lualib/pdnc" --Zr's fancy day-night cycle stuff
 
 -- doomsday is ready for use! Defaults to about 5h until doomsday. 
--- require "lualib/doomsday" -- enables the doomsday module. Default to start doomsday after 3h
+require "lualib/doomsday" -- enables the doomsday module. Default to start doomsday after 3h
 
 -- MAP GENERATORS
 -- require "maps/grid"
