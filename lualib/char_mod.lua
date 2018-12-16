@@ -2,6 +2,39 @@
 -- Made by: I_IBlackI_I (Blackstone#4953 on discord) for FactorioMMO
 -- This module organizes the way in which the character bonuses are applied.
 
+-- Char mod is a module to support multiple modules changing the bonusses of a LuaControl https://lua-api.factorio.com/latest/LuaControl.html
+-- This module does not support bonusses of a LuaForce!
+--
+-- Usually one applies a bonus to a player in this manner:
+-- game.player.character.character_running_speed_modifier = 2.0  // double the speed
+-- but whenever two modules want to give a bonus they override each other in unpredictable ways.
+-- Char_mod resolves this issue by giving the modules an interface to add a bonus to a player.
+-- The supported bonusses can be found in the global.char_mod.bonus_list variable
+-- There are also limits to the maximal applied total (all module bonusses added together) in order to prevent over the top behaviour
+-- 
+-- Char_mod not only allows you to add to a bonus, but also multiply (mul) subtract (sub) and divide (div) from a bonus.
+-- in order to create a bonus you need to use the char_mod_add_bonus function. This function requires 3 parameters
+-- 1. a LuaPlayer
+-- 2. A string which exists in global.char_mod.bonus_list
+-- 3. A table containing the bonus information which may have, but recommended to have all:
+-- 		i. a `name` of the bonus, usually the module adding the bonus
+--	   ii. a `op`, the operation, can be add, sub, mul or div
+--	  iii. a `val`, value of the bonus.
+-- below is an example to increase the character pickup distance
+-- char_mod_add_bonus(p, "character_loot_pickup_distance_bonus", {name = "Example_Bonus", op = "add", val = 5})
+--
+-- the bonus can also be removed using char_mod_remove_bonus. This function requires 3 paramters
+-- 1. a LuaPlayer
+-- 2. A string which exists in global.char_mod.bonus_list
+-- 3. The name of the bonus to remove.
+-- char_mod_remove_bonus(p, "character_loot_pickup_distance_bonus", "Example_Bonus")
+--
+-- In order to override an existing bonus you can just call add bonus again. If the bonus name is known it will override it.
+
+
+
+
+
 --
 --	VARIABLES
 --
