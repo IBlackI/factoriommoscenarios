@@ -2,10 +2,11 @@
 -- made by Zr4g0n
 -- this module currently has issues with the event module and 'on nth tick'. 
 require "lualib/pdnc" --is this the best way to do this?
+require "lualib/general_library"
 global.doomsday_enabled = true
 global.doomsday = global.doomsday or {} -- used to check if this exists. 
 global.doomsday_start = 30.75 -- in ingame days. Use n.75 to make sure doomsday is at midnight. 
-global.doomsday_pollution = 20000 -- amount to be applied per tick
+global.doomsday_pollution_amount = 20000 -- amount to be applied per tick
 global.doomsday_surfance = 1
 global.doomsday_enable_players_online_compensator = true
 global.doomsday_current_fuzzy_playercount = 1.5 -- start assuming 1.5 players! :V
@@ -13,10 +14,10 @@ global.doomsday_current_fuzzy_playercount = 1.5 -- start assuming 1.5 players! :
 function doomsday_status()
 	game.print("Doomsday loaded!")
 	game.print("global.doomsday_start: " .. global.doomsday_start)
-	game.print("global.doomsday_pollution: " .. global.doomsday_pollution)
+	game.print("global.doomsday_pollution_amount: " .. global.doomsday_pollution_amount)
 	game.print("global.doomsday_surfance: " .. global.doomsday_surfance)
-	game.print("global.doomsday_enabled: " .. pdnc_bool_to_string(global.doomsday_enabled))
-	game.print("global.doomsday_enable_players_online_compensator: " .. pdnc_bool_to_string(global.doomsday_enable_players_online_compensator))
+	game.print("global.doomsday_enabled: " .. gl_bool_to_string(global.doomsday_enabled))
+	game.print("global.doomsday_enable_players_online_compensator: " .. gl_bool_to_string(global.doomsday_enable_players_online_compensator))
 	game.print("global.doomsday_current_fuzzy_playercount: " .. global.doomsday_current_fuzzy_playercount)
 	--game.print(": " .. )
 end
@@ -33,36 +34,32 @@ end
 function doomsday_on_load()
 	commands.add_command("timeleft", "Gives you the time till doomsday!", doomsday_time_left)
 	commands.add_command("doomsday", "Prints doomsday status", doomsday_status)
+	commands.add_command("doomsday_toggle", "Toggles the state of the Doomsday module", doomsday_toggle)
 end
 
-function doomsday_core()
+function doomsday_core(current_time)
 	if(global.doomsday_enable_players_online_compensator)then
 		doomsday_players_online_compensator()
 	end
 
-	local current_time = game.tick / game.surfaces[global.doomsday_surfance].ticks_per_day
+	--local current_time = game.tick / game.surfaces[global.doomsday_surfance].ticks_per_day
 	local x = current_time * 6.2831853 --2pi
 	local returnvalue = 0
 	local radius = 512 --make global
-	local pollution = global.doomsday_pollution -- total pollution applied per tick
+	local pollution = global.doomsday_pollution_amount -- total pollution applied per tick
 	local nodes = 16 -- the number of nodes to spread
 	if (current_time < global.doomsday_start) then
-		returnvalue = math.pow(pdnc_c_boxy(x), (1 + current_time / 4))
+		returnvalue = math.pow(gl_normalized_boxy_sine(x), (1 + current_time / 4))
 		-- days become darker over time towards n^6.125
-	elseif (current_time < global.doomsday_start + 1) then
+	elseif (current_time < global.doomsday_start + 2) then
 		--global.pdnc_enable_brightness_limit = false
 		returnvalue = math.pow(((global.doomsday_start + 1) - current_time), 7)
 		doomsday_pollute(radius,pollution,16)
 	else
 		global.pdnc_enable_brightness_limit = true
-		returnvalue = math.pow(pdnc_c_boxy(x), 6.125)--*0.5
+		returnvalue = math.pow(gl_normalized_boxy_sine, 6.125)--*0.5
 	end
 	return pdnc_scaler(returnvalue)
-end
-
-function doomsday_normal_curve(x)
-	return (1+ ((math.sin(x) + (0.111 * math.sin(3 * x))) * 1.124859392575928))/2
-	-- magic numbers to make it scale to (-1, 1)
 end
 
 function doomsday_pollute(radius,pollution,nodes)
@@ -78,7 +75,7 @@ function doomsday_pollute(radius,pollution,nodes)
 end
 
 function doomsday_time_left()
-	if (global.doomsday_start > 0)then
+	if (global.doomsday_start > 0) and global.doomsday_enabled then
 		local ticks_until_doomsday = game.surfaces[global.doomsday_surfance].ticks_per_day * global.doomsday_start
 		local ticks = ticks_until_doomsday - game.tick
 		if (ticks >= 0) then 

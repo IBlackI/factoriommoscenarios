@@ -8,6 +8,7 @@
 -- Handle 'next time' elegantly
 
 -- lamps enable darkness: [0.595 - 0.425] scaled to [0.0 - 0.85] range from [0.0 - 1.0] range
+require "lualib/general_library"
 global.pdnc = global.pdnc or {}
 global.pdnc_enabled = true 
 global.pdnc_stepsize = 21 -- also used for script.on_nth_tick
@@ -15,7 +16,7 @@ global.pdnc_surface = 1
 global.pdnc_current_time = 0
 global.pdnc_current_point = {x = 0, y = 1.0}
 global.pdnc_last_point = {x = -1, y = 0.0}
-global.pdnc_max_brightness = 0.5 -- for clusterio
+global.pdnc_max_brightness = 0.5
 global.pdnc_debug = false
 global.pdnc_enable_brightness_limit = false
 global.pdnc_enable_rocket_darkness = true
@@ -23,8 +24,9 @@ global.pdnc_rockets_launched = 0
 global.pdnc_rockets_launched_step_size = 0.025
 global.pdnc_rockets_launched_smooth = 0
 
+
 function pdnc_setup()
-	game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
+	game.surfaces[global.pdnc_surface].ticks_per_day = gl_min_to_ticks(10.0)
 	pdnc_on_load()
 end
 
@@ -66,8 +68,8 @@ function pdnc_extended_status()
 	game.print("global.pdnc_current_point x, y: " .. global.pdnc_current_point.x .. ", " .. global.pdnc_current_point.y)
 	game.print("global.pdnc_last_point x, y: " .. global.pdnc_last_point.x .. ", " .. global.pdnc_last_point.y)
 	game.print("global.pdnc_max_brightness: " .. global.pdnc_max_brightness)
-	game.print("global.pdnc_enable_brightness_limit: " .. pdnc_bool_to_string(global.pdnc_enable_brightness_limit))
-	game.print("global.pdnc_enable_rocket_darkness: " .. pdnc_bool_to_string(global.pdnc_enable_rocket_darkness))
+	game.print("global.pdnc_enable_brightness_limit: " .. gl_bool_to_string(global.pdnc_enable_brightness_limit))
+	game.print("global.pdnc_enable_rocket_darkness: " .. gl_bool_to_string(global.pdnc_enable_rocket_darkness))
 	game.print("global.pdnc_rockets_launched: " .. global.pdnc_rockets_launched)
 	game.print("global.pdnc_rockets_launched_step_size: " .. global.pdnc_rockets_launched_step_size)
 	game.print("global.pdnc_stepsize: " .. global.pdnc_stepsize)
@@ -76,32 +78,22 @@ function pdnc_extended_status()
 	game.print("current tick: " .. game.tick)
 end
 
-function pdnc_bool_to_string(b)
-	if(b)then
-		return "true"
-	else
-		return "false"
-	end
-end
-
 function pdnc_core()
 	if(global.pdnc_enabled)then
 		pdnc_freeze_check()
-		game.surfaces[global.pdnc_surface].ticks_per_day = pdnc_min_to_ticks(10.0)
+		game.surfaces[global.pdnc_surface].ticks_per_day = gl_min_to_ticks(10.0)
 		local s = global.pdnc_surface
-		global.pdnc_current_time = game.tick / game.surfaces[s].ticks_per_day
+		local x = game.tick / game.surfaces[s].ticks_per_day
+		global.pdnc_current_time = x
 		global.pdnc_last_point = global.pdnc_current_point
-		global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
 		
 		if(global.doomsday ~= nil) and (global.doomsday_enabled)then
-			global.pdnc_current_point = {x = global.pdnc_current_time, y = doomsday_core()}
-		--elseif(global.eternal_night ~= nil)then
-		--	global.pdnc_current_point = {x = global.pdnc_current_time, y = eternal_night_core()}
+			global.pdnc_current_point = {x = x, y = doomsday_core(x)}
 		else
-			global.pdnc_current_point = {x = global.pdnc_current_time, y = pdnc_program()}
+			global.pdnc_current_point = {x = x, y = pdnc_program(x)}
 		end
-		local top_point = pdnc_intersection_top (global.pdnc_last_point, global.pdnc_current_point)
-		local bot_point = pdnc_intersection_bot (global.pdnc_last_point, global.pdnc_current_point)
+		local top_point = pdnc_intersection_top(global.pdnc_last_point, global.pdnc_current_point)
+		local bot_point = pdnc_intersection_bot(global.pdnc_last_point, global.pdnc_current_point)
 		
 		-- the order is dusk - evening - morning - dawn. They *must* be in that order and they cannot be equal
 		if(top_point < bot_point) then -- dusk -> evening
@@ -145,18 +137,8 @@ function pdnc_freeze_check()
 	end
 end
 
-function pdnc_program()
-	local x = global.pdnc_current_time * math.pi * 2
-	return pdnc_scaler(pdnc_c_boxy(x))
-end
-
-function pdnc_c_boxy(x)
-	return pdnc_normalize((math.sin(x) + (0.111 * math.sin(3 * x))) * 1.124859392575928)
-	-- magic numbers to make it scale to (-1, 1)
-end
-
-function pdnc_normalize(n)
-	return (n + 1)/2
+function pdnc_program(x)
+	return pdnc_scaler(gl_normalized_boxy_sine(x))
 end
 
 function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
@@ -177,23 +159,16 @@ function pdnc_scaler(r) -- a bit messy, but simplifies a lot elsewhere
 	end
 end
 
-function pdnc_intersection (s1, e1, s2, e2)
-  local d = (s1.x - e1.x) * (s2.y - e2.y) - (s1.y - e1.y) * (s2.x - e2.x)
-  local a = s1.x * e1.y - s1.y * e1.x
-  local b = s2.x * e2.y - s2.y * e2.x
-  local x = (a * (s2.x - e2.x) - (s1.x - e1.x) * b) / d
-  --local y = (a * (s2.y - e2.y) - (s1.y - e1.y) * b) / d
-  return x--, y
-end
-
 function pdnc_intersection_top (s2, e2)
 	local s1, e1 = {x = -999999999, y = 0.85}, {x = 999999999, y = 0.85}
-	return pdnc_intersection (s1, e1, s2, e2)
+	
+	return gl_intersection(s1, e1, s2, e2)
 end
 
 function pdnc_intersection_bot (s2, e2)
 	local s1, e1 = {x = -999999999, y = 0.0}, {x = 999999999, y = 0.0}
-	return pdnc_intersection (s1, e1, s2, e2)
+	local r = gl_intersection(s1, e1, s2, e2)
+	return r.x
 end
 
 function pdnc_set_max_brightness(n)
@@ -201,10 +176,6 @@ function pdnc_set_max_brightness(n)
 		global.pdnc_max_brightness = n
 		pdnc_debug_message("global.pdnc_max_brightness set to " .. global.pdnc_max_brightness)
 	end
-end
-
-function pdnc_min_to_ticks(m)
-	return 60*60*m
 end
 
 function pdnc_rocket_launch_counter()
