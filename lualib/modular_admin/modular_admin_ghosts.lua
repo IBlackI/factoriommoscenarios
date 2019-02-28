@@ -4,7 +4,7 @@
 
 --
 --	PLAN
---	
+--
 --	This module is going to create a ghost when a player destroys an entity
 --	It will also create the admin force in which the ghosts will be placed
 --	--OPTIONALLY it will also have a list to exclude certain entities and place another defined entity instead
@@ -33,17 +33,17 @@ function modular_admin_ghosts_create_force()
 end
 
 function modular_admin_ghosts_invalid_entity(entity)
-	if entity.force.name == "neutral" 
-	or entity.name == "entity-ghost" 
-	or entity.type == "locomotive" 
-	or entity.type == "cargo-wagon" 
+	if entity.force.name == "neutral"
+	or entity.name == "entity-ghost"
+	or entity.type == "locomotive"
+	or entity.type == "cargo-wagon"
 	or entity.type == "fluid-wagon"
-	or entity.type == "car" 
-	or entity.type:find("robot") 
+	or entity.type == "car"
+	or entity.type:find("robot")
 	or entity.name == "tile-ghost"
     or entity.name == "item-request-proxy"
 	or entity.name == "deconstructible-tile-proxy"
-	then 
+	then
 		return true
 	else
 		return false
@@ -51,15 +51,15 @@ function modular_admin_ghosts_invalid_entity(entity)
 end
 
 function modular_admin_ghosts_entity_mined(event)
-	if global.modular_admin_ghosts.enabled == false then 
-		return 
+	if global.modular_admin_ghosts.enabled == false then
+		return
 	end
-	
+
 	local entity = event.entity
 	if modular_admin_ghosts_invalid_entity(entity) or game.players[event.player_index].force == game.forces.Admins then
 		return
 	end
-	
+
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
@@ -74,15 +74,15 @@ function modular_admin_ghosts_entity_mined(event)
 end
 
 function modular_admin_ghosts_entity_deconstructed(event)
-	if global.modular_admin_ghosts.enabled == false then 
-		return 
+	if global.modular_admin_ghosts.enabled == false then
+		return
 	end
-	
+
 	local entity = event.entity
 	if modular_admin_ghosts_invalid_entity(entity) then
 		return
 	end
-	
+
 	local ghost = nil
 	if entity.type == "pipe-to-ground" then
 		ghost = entity.surface.create_entity
@@ -91,7 +91,7 @@ function modular_admin_ghosts_entity_deconstructed(event)
 		ghost = entity.surface.create_entity
 		{name="entity-ghost",	force=game.forces.Admins, inner_name=entity.name, position=entity.position, direction = entity.direction}
 	end
-	if ghost ~= nil then
+	if ghost ~= nil and entity.last_user ~= nil then
 		ghost.last_user = entity.last_user
 	end
 end
