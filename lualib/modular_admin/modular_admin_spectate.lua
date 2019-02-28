@@ -108,7 +108,7 @@ function modular_admin_spectate_update_position(event)
 				player = game.players[player_index]
 				follow_target = game.players[follow_target_index]
 				if player and follow_target then
-					player.teleport(follow_target.surface.find_non_colliding_position("player", follow_target.position, 0, 1), follow_target.surface)
+					player.teleport(follow_target.surface.find_non_colliding_position("player", follow_target.position, 0, 1))
 				end
 			end
 		end
