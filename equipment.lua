@@ -20,14 +20,6 @@ local function give_player_fighting_equipment(player)
 	end
 end
 
-local function give_player_tools(player)
-	if (player.force.technologies["steel-processing"].researched) then
-        player.insert { name = "steel-axe", count = 2 }
-    else
-        player.insert { name = "iron-axe", count = 5 }
-    end
-end
-
 local function teleport(player)
 	player.teleport(player.surface.find_non_colliding_position("player", player.position, 0, 1))
 end
@@ -43,7 +35,7 @@ function player_joined(event)
 		player.insert { name = "stone-furnace", count = 2 }
 	end
 	
-	give_player_tools(player)
+	
 	teleport(player)
 
 end
