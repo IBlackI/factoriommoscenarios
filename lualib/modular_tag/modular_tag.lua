@@ -76,7 +76,7 @@ function modular_tag_toggle_gui_visibility(player)
 		end
 		global.modular_tag.visible[player.name] = true
 	end
-	modular_tag_get_frame(player).style.visible = global.modular_tag.visible[player.name]
+	modular_tag_get_frame(player).visible = global.modular_tag.visible[player.name]
 end
 
 function modular_tag_update_gui(player)
@@ -101,7 +101,7 @@ function modular_tag_get_frame(player)
 	else
 		tf = ff.add { type = "frame", name = "modular_tag-frame", caption = "Choose Tag", direction = "vertical"}
 		local v = global.modular_tag.visible[player.name] or false
-		tf.style.visible = v
+		tf.visible = v
 		tf.style.maximal_width = 180
 	end
 	return tf

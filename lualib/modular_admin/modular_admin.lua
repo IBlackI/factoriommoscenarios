@@ -117,7 +117,7 @@ function modular_admin_gui_toggle_visibility(p)
 		end
 	end
 	local tg = modular_admin_get_flow(p)
-	tg.style.visible = global.modular_admin.visible[p.name]
+	tg.visible = global.modular_admin.visible[p.name]
 end
 
 
@@ -140,7 +140,7 @@ function modular_admin_get_flow(p)
 	else 
 		local mgff = mod_gui.get_frame_flow(p)
 		local maf = mgff.add {type = "flow", name = "modular_admin_flow", direction = "horizontal"}
-		maf.style.visible = global.modular_admin.visible[p.name]
+		maf.visible = global.modular_admin.visible[p.name]
 		return maf
 	end
 end
