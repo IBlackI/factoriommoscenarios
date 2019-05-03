@@ -21,7 +21,7 @@ local function give_player_fighting_equipment(player)
 end
 
 local function teleport(player)
-	player.teleport(player.surface.find_non_colliding_position("player", player.position, 0, 1))
+	player.teleport(player.surface.find_non_colliding_position("character", player.position, 0, 1))
 end
 -- Give player starting items.
 -- @param event on_player_joined event
