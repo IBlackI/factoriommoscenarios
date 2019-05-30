@@ -72,7 +72,7 @@ function modular_admin_tag_gui_clicked(event)
 	local e = event.element
 	if e ~= nil then
 		if p.admin then
-			if e.parent.name == modular_admin_get_menu(p).name then
+			if e.parent ~= nil and (e.parent.name == modular_admin_get_menu(p).name) then
 				if e.name == "modular_admin_tag_button" then
 					if global.modular_admin_tag.enabled then
 						modular_admin_tag_player(p)

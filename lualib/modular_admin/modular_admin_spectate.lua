@@ -238,7 +238,7 @@ function modular_admin_spectate_gui_changed(p)
 			else
 				st = bf.add {type = "frame", name = "modular_admin_spectate_pane", caption = "Specate Menu", direction = "vertical"}
 			end
-			st.style.visible = global.modular_admin_spectate.visible[p.name]
+			st.visible = global.modular_admin_spectate.visible[p.name]
 			local sm = st
 			if global.modular_admin_spectate.player_spectator_state[p.index] == true then
 				local srb = sm.add {type = "button", name = "modular_admin_spectate_return_button", caption = "Return"}

@@ -50,7 +50,7 @@ end
 
 function modular_information_popup_update_menu(p)
 	local mimc = modular_information_get_menu_canvas(p)
-	mimc.style.visible = true
+	mimc.visible = true
 	mimc.caption = "Popup"
 	--Create a button for each popup
 	local mimcsp = mimc.add {type="scroll-pane", name="modular_information_popup_scroll_pane"}

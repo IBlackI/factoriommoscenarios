@@ -15,7 +15,7 @@ function modular_information_dummy_create_gui(p)
 	miip.clear()
 	miip.add {type="label", caption = "This is here to test only!"}
 	local mimc = modular_information_get_menu_canvas(p)
-	mimc.style.visible = true
+	mimc.visible = true
 	mimc.add {type="label", caption = "Hello World!"}
 	mimc.caption = "Dummy Module"
 	local mimctb = mimc.add {type="text-box", name = "modular_information_dummy_text-box"}

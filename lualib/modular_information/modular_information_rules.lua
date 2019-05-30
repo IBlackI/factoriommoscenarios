@@ -73,7 +73,7 @@ function modular_information_rules_create_gui(p)
 		b.style.right_padding = 0
 		b.style.bottom_padding = 0
 		b.style.minimal_width = 470
-		b.style.align = "left"
+		b.style.horizontal_align = "left"
 		i = i + 1
 	end
 end
