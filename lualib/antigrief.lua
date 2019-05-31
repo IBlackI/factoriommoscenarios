@@ -23,9 +23,9 @@ function antigrief.arty_remote_ban(event)
     if event.item.name == "artillery-targeting-remote" and count > 40 then
         antigrief.kick(player)
         antigrief.alert(player.name .. " is using an artillery remote maliciously.", player.character)
-    -- elseif string.find(event.item.name, "grenade") and player.surface.count_entities_filtered{force=player.force, area=area, name="steam-engine"} > 20 then --Grenading power
-    --     antigrief.banhammer(player)
-    --     antigrief.alert(player.name .. " is using grenades on power.", player.character)
+    elseif string.find(event.item.name, "grenade") and player.surface.count_entities_filtered{force=player.force, area=area, name="steam-engine"} > 20 then --Grenading power
+        antigrief.banhammer(player)
+        antigrief.alert(player.name .. " is using grenades on power.", player.character)
     end
 end
 
@@ -55,7 +55,7 @@ function antigrief.wanton_destruction(event)
         return
     end
     --Playerkilling.  Players over the trolltimer get some leeway
-    if event.entity.type == "character" and event.entity.player then
+    if event.entity and event.entity.valid and event.entity.type == "character" and event.entity.player then
         antigrief.alert(player.name .. " killed " .. event.entity.player.name, event.entity)
         if player.online_time < antigrief.TROLL_TIMER then
             antigrief.add_points(player, 60)
@@ -102,29 +102,29 @@ end
 function antigrief.kick(player, reason)
     reason = reason or "griefing (automoderator)"
     if player.permission_group.name == "trusted" or player.online_time > antigrief.TROLL_TIMER then
-        --if not global.antigrief.warned[player.name] then
+        if not global.antigrief.warned[player.name] then
             global.antigrief.warned[player.name] = true
             game.kick_player(player, reason)
             return
-        --end
+        end
     end
     --still here?  We have not yet found a reason to only kick, so ban.
     game.ban_player(player, reason .. " to appeal message on discord.")
 end
 
--- function antigrief.banhammer(player)
---     --If player is > level 5, then warn first.
---     --What permission group is the player in?
---     if player.permission_group.name == "trusted" then --Kick first.
---         if not global.antigrief.warned[player.name] then
---             global.antigrief.warned[player.name] = true
---             game.kick_player(player, "griefing (automoderator)")
---             return
---         end
---     else
---         game.ban_player(player, "griefing (automoderator)")
---     end
--- end
+function antigrief.banhammer(player)
+    --If player is > level 5, then warn first.
+    --What permission group is the player in?
+    if player.permission_group.name == "trusted" then --Kick first.
+        if not global.antigrief.warned[player.name] then
+            global.antigrief.warned[player.name] = true
+            game.kick_player(player, "griefing (automoderator)")
+            return
+        end
+    else
+        game.ban_player(player, "griefing (automoderator)")
+    end
+end
 
 --PASSIVE functions
 --Common tactic is to remove pump.  So if someone landfills a pump and removes it... That's a huge red flag.
@@ -246,7 +246,8 @@ function antigrief.armor_drop(event)
     if player.get_item_count("power-armor-mk2") >= 1 then
         local armor = player.get_inventory(defines.inventory.character_armor).find_item_stack("power-armor-mk2") or
         player.get_inventory(defines.inventory.character_main).find_item_stack("power-armor-mk2") or
-        player.get_inventory(defines.inventory.player_quickbar).find_item_stack("power-armor-mk2") or
+        --[[Enable the quickbar check below for 0.16 only, no quickbar in 0.17
+		player.get_inventory(defines.inventory.player_quickbar).find_item_stack("power-armor-mk2") or]]
         player.get_inventory(defines.inventory.character_trash).find_item_stack("power-armor-mk2")
 
         if armor then
