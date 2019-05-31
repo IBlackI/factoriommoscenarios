@@ -38,7 +38,7 @@ function antigrief.wanton_destruction(event)
     end
 
     local player
-    if event.cause.type == "player" then
+    if event.cause.type == "character" then
         player = event.cause.player
     end
     if event.cause.type == "car" or event.cause.type == "locomotive" then
@@ -55,7 +55,7 @@ function antigrief.wanton_destruction(event)
         return
     end
     --Playerkilling.  Players over the trolltimer get some leeway
-    if event.entity.type == "player" and event.entity.player then
+    if event.entity.type == "character" and event.entity.player then
         antigrief.alert(player.name .. " killed " .. event.entity.player.name, event.entity)
         if player.online_time < antigrief.TROLL_TIMER then
             antigrief.add_points(player, 60)
@@ -244,10 +244,10 @@ function antigrief.armor_drop(event)
         return
     end
     if player.get_item_count("power-armor-mk2") >= 1 then
-        local armor = player.get_inventory(defines.inventory.player_armor).find_item_stack("power-armor-mk2") or
-        player.get_inventory(defines.inventory.player_main).find_item_stack("power-armor-mk2") or
+        local armor = player.get_inventory(defines.inventory.character_armor).find_item_stack("power-armor-mk2") or
+        player.get_inventory(defines.inventory.character_main).find_item_stack("power-armor-mk2") or
         player.get_inventory(defines.inventory.player_quickbar).find_item_stack("power-armor-mk2") or
-        player.get_inventory(defines.inventory.player_trash).find_item_stack("power-armor-mk2")
+        player.get_inventory(defines.inventory.character_trash).find_item_stack("power-armor-mk2")
 
         if armor then
             local item = player.surface.spill_item_stack(player.position, armor) --This could be used to duplicate equipment if we remove the wrong PA2.  But such a weird edge case...

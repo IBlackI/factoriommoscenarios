@@ -108,7 +108,7 @@ function modular_admin_spectate_update_position(event)
 				player = game.players[player_index]
 				follow_target = game.players[follow_target_index]
 				if player and follow_target then
-					player.teleport(follow_target.surface.find_non_colliding_position("player", follow_target.position, 0, 1))
+					player.teleport(follow_target.surface.find_non_colliding_position("character", follow_target.position, 0, 1))
 				end
 			end
 		end
@@ -156,7 +156,7 @@ function modular_admin_spectate_set_normal_teleport(p)
 	modular_admin_spectate_set_normal(p)
 	if global.modular_admin_spectate.player_spectator_state[p.index] == false then
 		p.print("Teleporting you to the location you are currently looking at.")
-		p.teleport(p.surface.find_non_colliding_position("player", pos, 0, 1))
+		p.teleport(p.surface.find_non_colliding_position("character", pos, 0, 1))
 	end
 end
 
