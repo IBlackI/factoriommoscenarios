@@ -45,7 +45,7 @@ function modular_admin_players_gui_clicked(event)
 	local i = event.player_index
 	local p = game.players[i]
 	local e = event.element
-	if e ~= nil then
+	if (e and e.parent) ~= nil then
 		if p.admin then
 			if e.parent.name == modular_admin_get_menu(p).name then
 				if e.name == "modular_admin_players_button" then
@@ -71,7 +71,7 @@ function modular_admin_players_gui_clicked(event)
 			if not (e.valid) then return end
 			for _, player in pairs(game.connected_players) do
                 if e.name == "modular_admin_players_label_player_list_teleport_" .. player.name then
-                    p.teleport(player.surface.find_non_colliding_position("player", player.position))
+                    p.teleport(player.surface.find_non_colliding_position("character", player.position, 0, 1))
                 elseif e.name == "modular_admin_players_label_player_list_follow_" .. player.name then
                     if modular_admin_submodule_state("modular_admin_spectate_follow") then
                         modular_admin_spectate_set_spectator(p)

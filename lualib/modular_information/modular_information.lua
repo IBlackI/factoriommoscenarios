@@ -100,7 +100,7 @@ function modular_information_gui_changed(p)
 	local mimc = modular_information_get_menu_canvas(p)
 	mimc.caption = "NOT SET"
 	mimc.clear()
-	mimc.style.visible = false
+	mimc.visible = false
 	mimc.style.minimal_width = 160
 	mimc.style.maximal_width = 185
 	mimc.style.minimal_height = 255
@@ -177,7 +177,7 @@ function modular_information_gui_show(p)
 		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_close_caption, color = {r=1, g=0, b=0}, order = 5})
 	end
 	local mif = modular_information_get_flow(p)
-	mif.style.visible = global.modular_information.visible[p.name]
+	mif.visible = global.modular_information.visible[p.name]
 end
 
 function modular_information_gui_hide(p)
@@ -188,7 +188,7 @@ function modular_information_gui_hide(p)
 		topgui_add_button(p.name, {name = "modular_information_toggle_button", caption = global.modular_information.button_open_caption, color = {r=0, g=1, b=0}, order = 5})
 	end
 	local mif = modular_information_get_flow(p)
-	mif.style.visible = global.modular_information.visible[p.name]
+	mif.visible = global.modular_information.visible[p.name]
 end
 
 function modular_information_sort_table(p)
@@ -215,7 +215,7 @@ function modular_information_get_flow(p)
 		mif.style.left_padding = 0
 		mif.style.right_padding = 0
 		mif.style.bottom_padding = 0
-		mif.style.visible = global.modular_information.visible[p.name]
+		mif.visible = global.modular_information.visible[p.name]
 		return mif
 	end
 end

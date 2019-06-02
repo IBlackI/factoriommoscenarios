@@ -74,7 +74,7 @@ function modular_admin_boost_gui_changed(p)
 			else
 				mabp = mabpa.add {type = "flow", name = "modular_admin_boost_flow", direction = "vertical",  style = "slot_table_spacing_vertical_flow"}
 			end
-			mabpa.style.visible = global.modular_admin_boost.visible[p.name]
+			mabpa.visible = global.modular_admin_boost.visible[p.name]
 			local pbs = global.modular_admin_boost.bonus_state[p.name]
 			local bpb
 			if pbs.pickup then

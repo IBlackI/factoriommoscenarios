@@ -108,7 +108,7 @@ function modular_admin_spectate_update_position(event)
 				player = game.players[player_index]
 				follow_target = game.players[follow_target_index]
 				if player and follow_target then
-					player.teleport(follow_target.position, follow_target.surface)
+					player.teleport(follow_target.surface.find_non_colliding_position("character", follow_target.position, 0, 1))
 				end
 			end
 		end
@@ -156,7 +156,7 @@ function modular_admin_spectate_set_normal_teleport(p)
 	modular_admin_spectate_set_normal(p)
 	if global.modular_admin_spectate.player_spectator_state[p.index] == false then
 		p.print("Teleporting you to the location you are currently looking at.")
-		p.teleport(p.surface.find_non_colliding_position("player", pos))
+		p.teleport(p.surface.find_non_colliding_position("character", pos, 0, 1))
 	end
 end
 
@@ -238,7 +238,7 @@ function modular_admin_spectate_gui_changed(p)
 			else
 				st = bf.add {type = "frame", name = "modular_admin_spectate_pane", caption = "Specate Menu", direction = "vertical"}
 			end
-			st.style.visible = global.modular_admin_spectate.visible[p.name]
+			st.visible = global.modular_admin_spectate.visible[p.name]
 			local sm = st
 			if global.modular_admin_spectate.player_spectator_state[p.index] == true then
 				local srb = sm.add {type = "button", name = "modular_admin_spectate_return_button", caption = "Return"}
