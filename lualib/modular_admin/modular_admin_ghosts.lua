@@ -38,6 +38,7 @@ function modular_admin_ghosts_invalid_entity(entity)
 	or entity.type == "locomotive"
 	or entity.type == "cargo-wagon"
 	or entity.type == "fluid-wagon"
+	or entity.type == "artillery-wagon"
 	or entity.type == "car"
 	or entity.type:find("robot")
 	or entity.name == "tile-ghost"
