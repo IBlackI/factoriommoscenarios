@@ -41,8 +41,9 @@ function modular_admin_ghosts_invalid_entity(entity)
 	or entity.type == "car"
 	or entity.type:find("robot")
 	or entity.name == "tile-ghost"
-    or entity.name == "item-request-proxy"
+    	or entity.name == "item-request-proxy"
 	or entity.name == "deconstructible-tile-proxy"
+	or entity.type == "unit"
 	then
 		return true
 	else
