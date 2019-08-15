@@ -50,7 +50,10 @@ function modular_information_rules_show_rule(p, r)
 			short.style.font = "default-large-semibold"
 			short.style.maximal_width = 480
 			long.style.maximal_width = 480
-			mirt.add{type="button", name="modular_information_rules_back_button", caption = "Back"}
+			local mirs = mirt.add {type="empty-widget", name = "modular_information_rules_spacer"}
+			mirs.style.vertically_stretchable = true
+			local mirbb = mirt.add{type="button", name="modular_information_rules_back_button", caption = "Back"}
+			mirbb.style = "back_button"
 		end
 	end
 end
@@ -72,7 +75,7 @@ function modular_information_rules_create_gui(p)
 		b.style.left_padding = 5
 		b.style.right_padding = 0
 		b.style.bottom_padding = 0
-		b.style.minimal_width = 470
+		b.style.horizontally_stretchable = true
 		b.style.horizontal_align = "left"
 		i = i + 1
 	end

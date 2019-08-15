@@ -78,10 +78,12 @@ function modular_information_gui_changed(p)
 	local tot = 0
 	for i, button in pairs(global.modular_information.sorted[p.name]) do
 		local b = mimt.add {name=button.name, type="button", caption=button.caption}
+		b.style = "list_box_item"
 		if global.modular_information.active_button[p.name] == button.name then
-			b.style.font_color = {r=0, g=1, b=0}
-		else
-			b.style.font_color = {r=1, g=0, b=0}
+			b.style = "highlighted_tool_button"
+			b.style.horizontal_align = "left"
+			b.style.left_padding = 8
+			b.style.height = 28
 		end
 		b.style.minimal_width = 140
 		tot = tot + 1
@@ -101,8 +103,7 @@ function modular_information_gui_changed(p)
 	mimc.caption = "NOT SET"
 	mimc.clear()
 	mimc.visible = false
-	mimc.style.minimal_width = 160
-	mimc.style.maximal_width = 185
+	mimc.style.width = 200
 	mimc.style.minimal_height = 255
 	mimc.style.maximal_height = 255
 end
@@ -114,21 +115,15 @@ function modular_information_get_menu(p)
 		mimt = bf.modular_information_menu.modular_information_menu_scroll.modular_information_menu_table
 	else
 		local mim = bf.add {name = "modular_information_menu", type = "frame", direction = "vertical", caption = "Information Menu"}
-		local mims = mim.add {name = "modular_information_menu_scroll", type = "scroll-pane"}
-		mims.style.top_padding = 0
-		mims.style.left_padding = 0
-		mims.style.right_padding = 0
-		mims.style.bottom_padding = 0
-		mims.style.maximal_height = 175
-		mims.style.minimal_height = 175
-		mimt = mims.add {name = "modular_information_menu_table", type = "table", column_count = 1}
+		mim.style.vertically_stretchable = true
+		local mims = mim.add {name = "modular_information_menu_scroll", type = "scroll-pane", vertical_scroll_policy="always"}
+		mims.style = "list_box_scroll_pane"
+		mims.style.vertically_stretchable = true
+		mimt = mims.add {name = "modular_information_menu_table", type = "flow", direction = "vertical"}
 		mimt.style.vertical_spacing = 0
-		mimt.style.top_padding = 0
-		mimt.style.left_padding = 0
-		mimt.style.right_padding = 0
-		mimt.style.bottom_padding = 0
-		local mict = mim.add {name = "modular_information_close_text", type = "label", caption = "Close Menu"}
-		mict.style.font_color = {r=1,g=0,b=0}
+		local mict = mim.add {name = "modular_information_close_text", type = "button", caption = "Close Menu"}
+		mict.style = "red_button"
+		mict.style.horizontally_stretchable = true
 	end
 	return mimt
 end
@@ -151,9 +146,9 @@ function modular_information_get_information_pane(p)
 		mips = mif.modular_information_pane.modular_information_pane_scroll
 	else 
 		local mip = mif.add {name = "modular_information_pane", type = "frame", direction = "vertical", caption = "Information pane"}
-		mips = mip.add {name = "modular_information_pane_scroll", type = "scroll-pane"}
-		mips.style.maximal_height = 200
-		mips.style.minimal_height = 200
+		mip.style.vertically_stretchable = true
+		mips = mip.add {name = "modular_information_pane_scroll", type = "scroll-pane", vertical_scroll_policy="always"}
+		mips.style.height = 207
 		mips.style.minimal_width = 500
 		mips.style.maximal_width = 500
 	end
@@ -204,19 +199,21 @@ function modular_information_sort_table(p)
 end
 
 function modular_information_get_flow(p)
-	local f = p.gui.center.modular_information_flow
-	if f ~= nil then
-		return f
-	else 
-		local pgc = p.gui.center
-		local mif = pgc.add {type = "table", name = "modular_information_flow", column_count = 3}
-		mif.style.horizontal_spacing = 0
-		mif.style.top_padding = 0
-		mif.style.left_padding = 0
-		mif.style.right_padding = 0
-		mif.style.bottom_padding = 0
-		mif.visible = global.modular_information.visible[p.name]
-		return mif
+	local f = p.gui.screen.modular_information_frame
+	if f ~= nil and f.valid and f.modular_information_flow ~= nil and f.modular_information_flow.valid then
+		return f.modular_information_flow
+	else
+		local pgc = p.gui.screen
+		local mif = pgc.add {type = "frame", name = "modular_information_frame", direction="vertical"}
+		mif.auto_center = true
+		mif.style = "graphicless_frame"
+		mif.style.padding = 0
+		local miff = mif.add {type = "flow", name = "modular_information_flow", direction="horizontal"}
+		miff.style.horizontal_spacing = 0
+		miff.style.height = 255
+		miff.style.padding = 0
+		miff.visible = global.modular_information.visible[p.name]
+		return miff
 	end
 end
 

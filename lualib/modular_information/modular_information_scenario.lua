@@ -19,7 +19,13 @@ function modular_information_scenario_create_gui(p)
 	mist.style.maximal_width = 480
 	mist.style.single_line = false
 	if p.admin then
-		miip.add {type="button", caption = "Edit this text", name = "modular_information_scenario_edit_button"}
+		local miss = miip.add {type="empty-widget", name = "modular_information_scenario_spacer"}
+		miss.style.vertically_stretchable = true
+		local miseb = miip.add {type="button", caption = "Edit this text", name = "modular_information_scenario_edit_button"}
+		miseb.style = "partially_promised_crafting_queue_slot"
+		miseb.style.left_margin = 186
+		miseb.style.width = 108
+		miseb.style.height = 28
 	end
 end
 	
@@ -45,14 +51,24 @@ function modular_information_scenario_gui_clicked(event)
 			miset.text = global.modular_information_scenario.text
 			miset.style.maximal_width = 480
 			miset.style.minimal_width = 480
-			miset.style.minimal_height = 145
+			miset.style.minimal_height = 165
 			local misbhf = miip.add {type = "flow", name = "modular_information_scenario_button_helper_flow", direction = "horizontal"}
-			local misesb = misbhf.add {type = "button", name = "modular_information_scenario_edit_save_button", caption = "Save"}
-			misesb.style.font_color = {r = 0, g = 1, b = 0}
-			local misecb = misbhf.add {type = "button", name = "modular_information_scenario_edit_clear_button", caption = "Clear text"}
-			misecb.style.font_color = {r = 0.5, g = 0.5, b = 0}
 			local mis = misbhf.add {type = "button", name = "modular_information_scenario_cancel_button", caption = "Cancel"}
-			mis.style.font_color = {r = 1, g = 0, b = 0}
+			mis.style = "red_back_button"
+			mis.style.height = 28
+			mis.style.width = 150
+			mis.style.horizontal_align = "left"
+			local misecb = misbhf.add {type = "button", name = "modular_information_scenario_edit_clear_button", caption = "Clear text"}
+			misecb.style = "dialog_button"
+			misecb.style.height = 28
+			misecb.style.width = 108
+			misecb.style.horizontal_align = "center"
+			misecb.style.left_margin = 3
+			misecb.style.right_margin = 3
+			local misesb = misbhf.add {type = "button", name = "modular_information_scenario_edit_save_button", caption = "Save"}
+			misesb.style = "confirm_button"
+			misesb.style.height = 28
+			misesb.style.width = 210
 		elseif e.name == "modular_information_scenario_edit_save_button" then
 			global.modular_information_scenario.text = modular_information_get_information_pane(p).modular_information_scenario_edit_textbox.text
 			modular_information_scenario_create_gui(p)

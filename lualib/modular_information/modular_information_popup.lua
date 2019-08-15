@@ -14,7 +14,6 @@ global.modular_information_popup.popups = global.modular_information_popup.popup
 --
 function modular_information_popup_create_gui(p, i)
 	modular_information_popup_update_popup(p, i)
-	modular_information_popup_update_menu(p)
 end
 	
 function modular_information_popup_update_popup(p, i)
@@ -26,11 +25,20 @@ function modular_information_popup_update_popup(p, i)
 	miipl.style.maximal_width = 480
 	miipl.style.single_line = false
 	if(p.admin) then
+		local mips = miip.add {type="empty-widget", name = "modular_information_popup_spacer"}
+		mips.style.vertically_stretchable = true
 		local mipnc = miip.add {type="button", name = "modular_information_popup_repop_" .. i, caption = "Repop"}
-		mipnc.style.font_color = {r=0, g=0.5, b=0}
-		mipnc.style.minimal_width = 140
-		mipnc.style.maximal_width = 140
+		mipnc.style = "confirm_button"
+		mipnc.style.left_margin = 368
 	end
+	modular_information_popup_update_menu(p)
+	local name = "modular_information_popup_button_" .. i
+	local button = modular_information_get_menu_canvas(p).modular_information_popup_scroll_pane.modular_information_popup_flow[name]
+	button.style = "highlighted_tool_button"
+	button.style.horizontal_align = "left"
+	button.style.left_padding = 8
+	button.style.height = 28
+	button.style.width = 164
 end	
 
 function modular_information_popup_add(b, t)
@@ -50,15 +58,15 @@ end
 
 function modular_information_popup_update_menu(p)
 	local mimc = modular_information_get_menu_canvas(p)
+	mimc.clear()
 	mimc.visible = true
 	mimc.caption = "Popup"
 	--Create a button for each popup
-	local mimcsp = mimc.add {type="scroll-pane", name="modular_information_popup_scroll_pane"}
-	mimcsp.style.top_padding = 0
-	mimcsp.style.left_padding = 0
-	mimcsp.style.right_padding = 0
-	mimcsp.style.bottom_padding = 0
+	local mimcsp = mimc.add {type="scroll-pane", name="modular_information_popup_scroll_pane", vertical_scroll_policy="always"}
+	mimcsp.style = "list_box_scroll_pane"
+	mimcsp.style.padding = 0
 	mimcsp.style.maximal_height = 255
+	mimcsp.style.vertically_stretchable = true
 	local mimcf = mimcsp.add {type="flow", direction="vertical", name="modular_information_popup_flow", style="slot_table_spacing_vertical_flow"}
 	mimcf.style.top_padding = 0
 	mimcf.style.left_padding = 0
@@ -66,15 +74,17 @@ function modular_information_popup_update_menu(p)
 	mimcf.style.bottom_padding = 0
 	if p.admin then
 		local mimcb = mimcf.add {type="button", name = "modular_information_popup_create", caption = "New"}
-		mimcb.style.font_color = {r=0, g=0.5, b=0}
-		mimcb.style.minimal_width = 140
-		mimcb.style.maximal_width = 140
+		mimcb.style = "working_weapon_button"
+		mimcb.style.horizontal_align = "left"
+		mimcb.style.left_padding = 8
+		mimcb.style.width = 164
+		mimcb.style.height = 28
 	end
 	for i = #global.modular_information_popup.popups, 1, -1 do
 		local p = global.modular_information_popup.popups[i]
 		local mimcb = mimcf.add {type="button", name = "modular_information_popup_button_" .. i, caption = p.button}
-		mimcb.style.minimal_width = 140
-		mimcb.style.maximal_width = 140
+		mimcb.style = "list_box_item"
+		mimcb.style.horizontally_stretchable = true
 	end
 end
 
@@ -84,19 +94,25 @@ function modular_information_popup_show_creator(p)
 		modular_information_set_information_pane_caption_color(p, "Popup Creator", {r=0.8,b=0,g=0})
 		miip.clear()
 		local mipntl = miip.add {type="label", name = "modular_information_popup_new_title_label" ,caption = "Popup title"}
+		mipntl.style.font = "heading-3"
 		local mipnt = miip.add {type="text-box", name = "modular_information_popup_new_title"}
-		mipnt.style.minimal_width = 105
-		mipnt.style.maximal_width = 105
+		mipnt.style.width = 480
 		local mipnml = miip.add {type="label", name = "modular_information_popup_new_message_label" ,caption = "Popup message"}
+		mipnml.style.font = "heading-3"
 		local mipnm = miip.add {type="text-box", name="modular_information_popup_new_message"}
-		mipnm.style.minimal_width = 400
-		mipnm.style.maximal_width = 400
+		mipnm.style.width = 480
 		mipnm.style.minimal_height = 50
+		local mips = miip.add {type="empty-widget", name = "modular_information_popup_spacer"}
+		mips.style.vertically_stretchable = true
 		local mipnc = miip.add {type="button", name = "modular_information_popup_new_create", caption = "Create"}
-		mipnc.style.font_color = {r=0, g=0.5, b=0}
-		mipnc.style.minimal_width = 140
-		mipnc.style.maximal_width = 140
-
+		mipnc.style = "confirm_double_arrow_button"
+		mipnc.style.horizontally_stretchable = true
+		modular_information_popup_update_menu(p)
+		local button = modular_information_get_menu_canvas(p).modular_information_popup_scroll_pane.modular_information_popup_flow.modular_information_popup_create
+		button.style = "highlighted_tool_button"
+		button.style.left_padding = 8
+		button.style.height = 28
+		button.style.width = 164
 	end
 end
 	
